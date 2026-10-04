@@ -1,0 +1,46 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Dulces Duendes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body class="login-body">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h1 class="login-brand">Dulces Duendes</h1>
+            <p class="login-subtitle">Sistema de gestión y punto de venta.</p>
+
+            <form asp-controller="Account" asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3 input-box">
+                    <input type="email" name="Email" class="form-control" placeholder="Ingrese su email..." required />
+                    <i class="bi bi-person"></i>
+                </div>
+                <div class="mb-3 input-box">
+                    <input type="password" name="Password" class="form-control" placeholder="Ingrese su contraseña"
+                           required />
+                    <i class="bi bi-lock"></i>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
