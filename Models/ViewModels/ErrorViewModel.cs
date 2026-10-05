@@ -1,4 +1,4 @@
-namespace DulcesDuendesApp.Models;
+namespace DulcesDuendesApp.Models.ViewModels;
 
 public class ErrorViewModel
 {

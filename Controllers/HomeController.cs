@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DulcesDuendesApp.Models;
+using DulcesDuendesApp.Models.ViewModels;
 
 namespace DulcesDuendesApp.Controllers;
 

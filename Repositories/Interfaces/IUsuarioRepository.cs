@@ -1,0 +1,9 @@
+using DulcesDuendesApp.Models;
+
+namespace DulcesDuendesApp.Repositories.Interfaces
+{
+    public interface IUsuarioRepository
+    {
+        Usuario? ObtenerPorEmail(string email);
+    }
+}
