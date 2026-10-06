@@ -4,8 +4,8 @@ namespace DulcesDuendesApp.Repositories.Interfaces
 {
     public interface IUsuarioRepository
     {
-        Usuario? ObtenerPorEmail(string email);
-        int ObtenerCantidad();
-        int Alta(Usuario usuario);
+        Task<Usuario?> ObtenerPorEmail(string email);
+        Task<int> ObtenerCantidad();
+        Task<int> Alta(Usuario usuario);
     }
 }

@@ -14,23 +14,23 @@ namespace DulcesDuendesApp.Repositories.Implementations
             _context = context;
         }
 
-        public Usuario? ObtenerPorEmail(string email)
+        public async Task<Usuario?> ObtenerPorEmail(string email)
         {
-            return _context.Usuarios
+            return await _context.Usuarios
              .Include(u => u.Rol)
-             .FirstOrDefault(u => u.Email == email && u.Activo);
+             .FirstOrDefaultAsync(u => u.Email == email && u.Activo);
         }
 
-        public int Alta(Usuario usuario)
+        public async Task<int> Alta(Usuario usuario)
         {
             _context.Usuarios.Add(usuario);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return usuario.Id;
         }
 
-        public int ObtenerCantidad()
+        public async Task<int> ObtenerCantidad()
         {
-            return _context.Usuarios.Count();
+            return await _context.Usuarios.CountAsync();
         }
     }
 }
