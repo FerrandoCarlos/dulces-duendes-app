@@ -40,7 +40,7 @@ namespace DulcesDuendesApp.Models
 
         public bool Activo { get; set; } = true;
 
-        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
         [NotMapped]
         public string? Password { get; set; }

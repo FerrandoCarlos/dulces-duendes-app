@@ -27,5 +27,17 @@ namespace DulcesDuendesApp.Services.Implementations
             return usuario;
         }
 
+        public int ObtenerCantidad()
+        {
+            return _repositorio.ObtenerCantidad();
+        }
+
+        public int Alta(Usuario usuario, string passwordPlano)
+        {
+            usuario.PasswordHash = _hasher.HashPassword(usuario, passwordPlano);
+            return _repositorio.Alta(usuario);
+        }
+
+
     }
 }

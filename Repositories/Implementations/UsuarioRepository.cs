@@ -20,5 +20,17 @@ namespace DulcesDuendesApp.Repositories.Implementations
              .Include(u => u.Rol)
              .FirstOrDefault(u => u.Email == email && u.Activo);
         }
+
+        public int Alta(Usuario usuario)
+        {
+            _context.Usuarios.Add(usuario);
+            _context.SaveChanges();
+            return usuario.Id;
+        }
+
+        public int ObtenerCantidad()
+        {
+            return _context.Usuarios.Count();
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using DulcesDuendesApp.Data;
+using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Repositories.Implementations;
 using DulcesDuendesApp.Services.Interfaces;
@@ -61,4 +62,32 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var UsuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
+
+    if (!context.Roles.Any())
+    {
+        context.Roles.AddRange(
+            new Rol { Nombre = "Administrador" },
+            new Rol { Nombre = "Empleado" }
+        );
+        context.SaveChanges();
+    }
+
+    if (UsuarioService.ObtenerCantidad() == 0)
+    {
+        var rolAdmin = context.Roles.First(r => r.Nombre == "Administrador");
+
+        var admin = new Usuario
+        {
+            Email = "admin@dulcesduendes.com",
+            Nombre = "Admin",
+            Apellido = "Sistema",
+            RolId = rolAdmin.Id
+        };
+        UsuarioService.Alta(admin, "Admin123!");
+    }
+}
 app.Run();
