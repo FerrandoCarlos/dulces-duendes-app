@@ -40,6 +40,27 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.TipoProducto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Tipo")
+                        .IsUnique();
+
+                    b.ToTable("TiposProducto");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
