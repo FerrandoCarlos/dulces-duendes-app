@@ -1,0 +1,10 @@
+@model DulcesDuendesApp.Models.ViewModels.AvatarViewModel
+
+@if (!string.IsNullOrEmpty(Model.Url))
+{
+    <img src="@Model.Url" class="avatar-circle @Model.Tamano" alt="Avatar" />
+}
+else
+{
+    <span class="avatar-circle avatar-iniciales @Model.Tamano">@Model.Iniciales</span>
+}

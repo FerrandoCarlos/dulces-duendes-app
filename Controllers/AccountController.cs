@@ -46,6 +46,7 @@ namespace DulcesDuendesApp.Controllers
                 new Claim(ClaimTypes.Name,$"{usuario.Nombre} {usuario.Apellido}"),
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(ClaimTypes.Role, usuario.Rol?.Nombre ?? string.Empty),
+                new Claim()
 
             };
 

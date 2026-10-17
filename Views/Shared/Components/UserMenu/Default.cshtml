@@ -1,0 +1,30 @@
+@model DulcesDuendesApp.Models.ViewModels.UserMenuViewModel
+
+@{
+    var avatarGrande = Model.Avatar with {Tamano = "avatar-md"};
+}
+<div class="dropdown user-menu">
+    <a href="#" class="dropdown-toggle-noicon" id="userMenuToggle" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">
+        <partial name="_Avatar" model="Model.Avatar" />
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end user-menu-panel" aria-labelledby="userMenuToggle">
+        <li class="user-menu-header">
+            <partial name="_Avatar" model="avatarGrande" />
+            <div>
+                <div class="user-menu-name">@Model.NombreCompleto</div>
+                <div class="user-menu-email">@Model.Email</div>
+            </div>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+            <a class="dropdown-item" href="#"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalLogout">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </button>
+        </li>
+    </ul>
+</div>

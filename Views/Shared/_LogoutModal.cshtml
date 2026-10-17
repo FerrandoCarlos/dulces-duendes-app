@@ -1,0 +1,19 @@
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header is-danger">
+                <h5 class="modal-title" id="modalLogoutTitulo">Cerrar sesión</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Seguro que querés cerrar sesión?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="btn btn-danger-dd">Sí, cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
