@@ -10,7 +10,7 @@ namespace DulcesDuendesApp.ViewComponents
             new("Perfil", "bi-person-circle", "Perfil", "Index"),
             new("Clientes", "bi-people","Clientes","Index"),
             new("Ventas","bi-cart3","Home","Index"),
-            new("Productos", "bi-box-sean","Productos", "Index"),
+            new("Productos", "bi-box-seam","Productos", "Index"),
             new("Tickets", "bi-receipt","Tickets","Index"),
             new("Usuarios", "bi-person-gear", "Usuarios","Index",Rol:"Administrador"),
         };
@@ -21,7 +21,7 @@ namespace DulcesDuendesApp.ViewComponents
 
             var visibles = Items
                 .Where(i => i.Rol == null || User.IsInRole(i.Rol))
-                .Select(i => i with {Activo = i.Controller == controllerActual});
+                .Select(i => i with { Activo = i.Controller == controllerActual });
 
             return View(visibles);
         }

@@ -74,6 +74,10 @@
   margin: 0;
 }
 
+.user-menu .dropdown-toggle-noicon,
+.user-menu .dropdown-toggle-noicon:hover {
+  text-decoration: none;
+}
 /* --- Modal --- */
 .modal-content {
   border-radius: 10px;

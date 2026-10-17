@@ -1,7 +1,8 @@
 .dd-shell {
+  --topbar-h: 64px;
   display: grid;
   grid-template-columns: 140px 1fr;
-  grid-template-rows: 64px 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
   grid-template-areas:
     'topbar topbar'
     'sidebar content';
@@ -16,6 +17,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .dd-brand {
@@ -57,7 +61,10 @@
   background-color: var(--azul-duende);
   display: flex;
   flex-direction: column;
-  padding-top: 1.5rem;
+  justify-content: center;
+  position: sticky;
+  top: var(--topbar-h);
+  height: calc(100vh - var(--topbar-h));
 }
 
 .dd-sidebar-link {
