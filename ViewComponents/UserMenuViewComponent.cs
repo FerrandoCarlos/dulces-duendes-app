@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DulcesDuendesApp.ViewComponents
 {
-    public class UserMenuViewComponent : ViewComponents
+    public class UserMenuViewComponent : ViewComponent
     {
         public IViewComponentResult Invoke()
         {
-            var nombre = User.Identity?.Name ?? string.Empty;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-            var avatar = new AvatarViewModel(User.FindFirst("AvatarUrl")?.Value, ObtenerIniciales(nombre));
+            var nombre = UserClaimsPrincipal.Identity?.Name ?? string.Empty;
+            var email = UserClaimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+            var avatar = new AvatarViewModel(UserClaimsPrincipal.FindFirst("AvatarUrl")?.Value, ObtenerIniciales(nombre));
 
             return View(new UserMenuViewModel(nombre, email, avatar));
         }

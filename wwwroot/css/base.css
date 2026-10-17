@@ -1,0 +1,51 @@
+:root {
+  --azul-duende: #1649a3;
+  --fucsia-magico: #c21883;
+  --verde-hoja: #2e7d45;
+  --verde-lima: #eaf6b9;
+  --amarillo-dorado: #f4c542;
+  --crema: #fffdf7;
+  --azul-noche: #172a52;
+  --coral: #e76f51;
+  --coral-sobre-oscuro: #ff9980;
+  --white: #ffffff;
+
+  --font-display: 'Poppins', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--azul-noche);
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}

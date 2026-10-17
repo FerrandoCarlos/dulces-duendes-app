@@ -20,7 +20,7 @@ namespace DulcesDuendesApp.ViewComponents
             var controllerActual = ViewContext.RouteData.Values["controller"]?.ToString();
 
             var visibles = Items
-                .Where(i => i.Rol == null || User.IsInRol(i.Rol))
+                .Where(i => i.Rol == null || User.IsInRole(i.Rol))
                 .Select(i => i with {Activo = i.Controller == controllerActual});
 
             return View(visibles);
