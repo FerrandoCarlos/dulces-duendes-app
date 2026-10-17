@@ -7,7 +7,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Rol> Roles { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
-
+    public DbSet<TipoProducto> TiposProducto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
