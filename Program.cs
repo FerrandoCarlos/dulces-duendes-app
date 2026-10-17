@@ -65,18 +65,25 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var UsuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
+    var usuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
 
+    SeedAsync(context, usuarioService).GetAwaiter().GetResult();
+}
+
+app.Run();
+
+static async Task SeedAsync(ApplicationDbContext context, IUsuarioService usuarioService)
+{
     if (!context.Roles.Any())
     {
         context.Roles.AddRange(
             new Rol { Nombre = "Administrador" },
             new Rol { Nombre = "Empleado" }
         );
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    if (UsuarioService.ObtenerCantidad() == 0)
+    if (await usuarioService.ObtenerCantidad() == 0)
     {
         var rolAdmin = context.Roles.First(r => r.Nombre == "Administrador");
 
@@ -87,7 +94,6 @@ using (var scope = app.Services.CreateScope())
             Apellido = "Sistema",
             RolId = rolAdmin.Id
         };
-        UsuarioService.Alta(admin, "Admin123!");
+        await usuarioService.Alta(admin, "Admin123!");
     }
 }
-app.Run();

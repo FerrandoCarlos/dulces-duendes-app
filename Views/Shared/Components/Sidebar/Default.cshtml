@@ -1,0 +1,11 @@
+@model IEnumerable<DulcesDuendesApp.Models.ViewModels.SidebarItemViewModel>
+
+<nav class="dd-sidebar" aria-label="Navegación principal">
+    @foreach(var item in Model)
+    {
+        <a class="dd-sidebar-link @(item.Activo ? "active": "")"
+           href="@(Url.Action(item.Action, item.Controller) ?? "#")">
+            <i class="bi @item.Icono"></i><span>@item.Texto</span>
+        </a>
+    }
+</nav>

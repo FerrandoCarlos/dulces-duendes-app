@@ -32,7 +32,7 @@ namespace DulcesDuendesApp.Controllers
             {
                 return View(modelo);
             }
-            var usuario = _usuarioService.ValidarCredenciales(modelo.Email, modelo.Password);
+            var usuario = await _usuarioService.ValidarCredenciales(modelo.Email, modelo.Password);
             if (usuario == null)
             {
                 ViewBag.Error = "Email o contraseña incorrectos.";
@@ -46,6 +46,7 @@ namespace DulcesDuendesApp.Controllers
                 new Claim(ClaimTypes.Name,$"{usuario.Nombre} {usuario.Apellido}"),
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(ClaimTypes.Role, usuario.Rol?.Nombre ?? string.Empty),
+                // new Claim()
 
             };
 
@@ -59,6 +60,14 @@ namespace DulcesDuendesApp.Controllers
             );
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
         }
     }
 }

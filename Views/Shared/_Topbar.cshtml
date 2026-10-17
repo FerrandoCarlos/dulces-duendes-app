@@ -1,0 +1,10 @@
+<header class="dd-topbar">
+    <a class="dd-brand" asp-controller="Home" asp-action="Index">Dulces Duendes</a>
+
+    <div class="dd-topbar-right">
+        <span class="dd-topbar-user">@User.Identity?.Name</span>
+        <span class="dd-topbar-sep">|</span>
+        <span class="dd-clock" id="reloj">00:00</span>
+        @await Component.InvokeAsync("UserMenu")
+    </div>
+</header>

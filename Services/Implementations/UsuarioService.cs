@@ -16,9 +16,9 @@ namespace DulcesDuendesApp.Services.Implementations
             _repositorio = repositorio;
         }
 
-        public Usuario? ValidarCredenciales(string email, string passwordPlano)
+        public async Task<Usuario?> ValidarCredenciales(string email, string passwordPlano)
         {
-            var usuario = _repositorio.ObtenerPorEmail(email);
+            var usuario = await _repositorio.ObtenerPorEmail(email);
             if (usuario == null) return null;
 
             var resultado = _hasher.VerifyHashedPassword(usuario, usuario.PasswordHash, passwordPlano);
@@ -27,15 +27,15 @@ namespace DulcesDuendesApp.Services.Implementations
             return usuario;
         }
 
-        public int ObtenerCantidad()
+        public async Task<int> ObtenerCantidad()
         {
-            return _repositorio.ObtenerCantidad();
+            return await _repositorio.ObtenerCantidad();
         }
 
-        public int Alta(Usuario usuario, string passwordPlano)
+        public async Task<int> Alta(Usuario usuario, string passwordPlano)
         {
             usuario.PasswordHash = _hasher.HashPassword(usuario, passwordPlano);
-            return _repositorio.Alta(usuario);
+            return await _repositorio.Alta(usuario);
         }
 
 
