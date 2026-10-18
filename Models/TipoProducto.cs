@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using DulcesDuendesApp.Common.Validation;
 
 namespace DulcesDuendesApp.Models
 {
@@ -9,9 +10,9 @@ namespace DulcesDuendesApp.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        [Display(Name = "Nombre")]
+        [Required(ErrorMessage = MensajesValidacion.Requerido)]
+        [StringLength(50, ErrorMessage = MensajesValidacion.LongitudMaxima)]
+        [Display(Name = "Tipo de Producto")]
         public string Tipo { get; set; } = string.Empty;
     }
 }
