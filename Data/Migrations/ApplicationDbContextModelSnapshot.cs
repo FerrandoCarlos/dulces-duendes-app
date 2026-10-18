@@ -22,6 +22,59 @@ namespace DulcesDuendesApp.Data.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("CodigoBarra")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<decimal>("PorcentajeGanancia")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("PrecioCosto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecioCuentaCorriente")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecioVenta")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoProductoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodigoBarra")
+                        .IsUnique();
+
+                    b.HasIndex("TipoProductoId");
+
+                    b.ToTable("Productos");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Rol", b =>
                 {
                     b.Property<int>("Id")
@@ -106,6 +159,17 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.HasIndex("RolId");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.TipoProducto", "TipoProducto")
+                        .WithMany()
+                        .HasForeignKey("TipoProductoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TipoProducto");
                 });
 
             modelBuilder.Entity("DulcesDuendesApp.Models.Usuario", b =>
