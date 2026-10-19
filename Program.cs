@@ -6,6 +6,7 @@ using DulcesDuendesApp.Repositories.Implementations;
 using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using DulcesDuendesApp.Common.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,9 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build();
 });
+
+builder.Services.Configure<NegocioOptions>(
+    builder.Configuration.GetSection(NegocioOptions.Seccion));
 
 var app = builder.Build();
 
