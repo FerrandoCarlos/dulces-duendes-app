@@ -8,5 +8,8 @@ namespace DulcesDuendesApp.Repositories.Interfaces
     {
         Task<Producto?> ObtenerPorId(int id);
         Task<PagedResult<Producto>> ObtenerPaginado(ProductoFiltro filtro, PageRequest page);
+        Task<Producto?> ObtenerPorCodigoBarra(string codigoBarra);
+        Task<int> Alta(Producto producto);
+        Task Modificar(Producto producto);
     }
 }

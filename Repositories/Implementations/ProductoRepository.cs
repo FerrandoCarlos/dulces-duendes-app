@@ -49,6 +49,22 @@ namespace DulcesDuendesApp.Repositories.Implementations
             };
         }
 
+        public async Task<Producto?> ObtenerPorCodigoBarra(string codigoBarra)
+        {
+            return await _context.Productos
+                .FirstOrDefaultAsync(p => p.CodigoBarra == codigoBarra);
+        }
+        public async Task<int> Alta(Producto producto)
+        {
+            _context.Productos.Add(producto);
+            await _context.SaveChangesAsync();
+            return producto.Id;
+        }
+
+        public async Task Modificar(Producto producto)
+        {
+            await _context.SaveChangesAsync();
+        }
         private IQueryable<Producto> AplicarFiltro(IQueryable<Producto> query, ProductoFiltro filtro)
         {
             query = query.Where(p => p.Activo);
@@ -72,5 +88,6 @@ namespace DulcesDuendesApp.Repositories.Implementations
                 _ => query
             };
         }
+
     }
 }
