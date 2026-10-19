@@ -19,6 +19,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -38,6 +39,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.Configure<NegocioOptions>(
     builder.Configuration.GetSection(NegocioOptions.Seccion));
+
+
 
 var app = builder.Build();
 
