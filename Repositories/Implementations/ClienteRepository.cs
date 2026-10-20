@@ -16,7 +16,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
         public async Task<Cliente?> ObtenerPorId(int id, CancellationToken cancellationToken = default)
         {
-            return await _context.Clientes.AsNoTracking().FirstOrDefault(c => c.Id == id, cancellationToken);
+            return await _context.Clientes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
 
         public async Task<int> Alta(Cliente cliente, CancellationToken cancellationToken = default)

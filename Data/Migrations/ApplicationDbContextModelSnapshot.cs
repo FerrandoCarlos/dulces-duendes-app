@@ -86,7 +86,7 @@ namespace DulcesDuendesApp.Data.Migrations
 
                     b.ToTable("Usuarios");
                 });
-
+                
             modelBuilder.Entity("DulcesDuendesApp.Models.Usuario", b =>
                 {
                     b.HasOne("DulcesDuendesApp.Models.Rol", "Rol")

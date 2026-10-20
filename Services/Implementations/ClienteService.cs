@@ -26,7 +26,7 @@ namespace DulcesDuendesApp.Services.Implementations
         public async Task<int> Modificacion(int id, Cliente cliente, CancellationToken cancellationToken = default){
             var c = await _repositorio.ObtenerPorId(id);
             if (c == null ) {
-                return null;
+                return -1;
             }
             return await _repositorio.Modificacion(id, cliente, cancellationToken);
         }
@@ -34,7 +34,7 @@ namespace DulcesDuendesApp.Services.Implementations
         {
             var c = await _repositorio.ObtenerPorId(id);
             if (c == null) {
-                return null;
+                return -1;
             }
             return await _repositorio.Baja(id, cancellationToken);
         }

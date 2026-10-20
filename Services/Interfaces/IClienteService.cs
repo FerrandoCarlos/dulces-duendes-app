@@ -4,7 +4,7 @@ using DulcesDuendesApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 
-namespace DulcesDuendesApp.Services.Implementations
+namespace DulcesDuendesApp.Services.Interfaces
 {
     public interface IClienteService
     {

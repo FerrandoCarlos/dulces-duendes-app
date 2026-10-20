@@ -1,0 +1,86 @@
+@model IList<DulcesDuendesApp.Models.Cliente>
+@{
+    ViewData[index: "Title"] = "Clientes";
+    int paginaNro = ViewBag.PaginaNro ?? 1;
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
+}
+
+<div class="page-header">
+    <h1>Clientes</h1>
+</div>
+
+
+<form style="display:none">@Html.AntiForgeryToken()</form>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div id="alertContainer"></div>
+
+<div class="table-panel">
+
+    <p class="d-flex gap-2 align-items-center">
+        <a asp-action="Create" class="btn btn-primary">Nuevo Cliente</a>
+    </p>
+
+    <table class="table table-striped" id="tablaClientes">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Teléfono</th>
+                <th>Direccion</th>
+                <th>Monto</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var cliente in Model)
+            {
+                <tr id="fila-@cliente.Id">
+                    <td>@cliente.Dni</td>
+                    <td>@cliente.Nombre</td>
+                    <td>@cliente.Apellido</td>
+                    <td>@cliente.Telefono</td>
+                    <td>@(cliente.Direccion == null ? "Sin dirección asociada" : cliente.Direccion)/td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@cliente.Id"
+                           class="btn btn-sm btn-outline-secondary">Editar</a>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar" data-id="@cliente.Id">
+                                Eliminar
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (!Model.Any())
+    {
+        <p>No hay clientes cargados.</p>
+    }
+
+    @if (totalPaginas > 1)
+    {
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= totalPaginas; i++)
+                {
+                    <li class="page-item @(i == paginaNro ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-paginaNro="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
+@await Html.PartialAsync("_ModalConfirmarBaja")
+
+@section Scripts {
+}
