@@ -12,6 +12,9 @@
 
   --font-display: 'Poppins', sans-serif;
   --font-body: 'Nunito', sans-serif;
+
+  --color-topbar: var(--azul-duende);
+  --color-sidebar: var(--azul-noche);
 }
 
 *,

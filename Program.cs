@@ -6,6 +6,7 @@ using DulcesDuendesApp.Repositories.Implementations;
 using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using DulcesDuendesApp.Common.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IPrecioCalculador, PrecioCalculador>();
+builder.Services.AddScoped<IProductoService, ProductoService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -36,6 +40,11 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build();
 });
+
+builder.Services.Configure<NegocioOptions>(
+    builder.Configuration.GetSection(NegocioOptions.Seccion));
+
+
 
 var app = builder.Build();
 

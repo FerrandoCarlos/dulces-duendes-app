@@ -11,7 +11,7 @@
 
 .dd-topbar {
   grid-area: topbar;
-  background-color: var(--azul-duende);
+  background-color: var(--color-topbar);
   color: var(--white);
   display: flex;
   align-items: center;
@@ -58,7 +58,7 @@
 
 .dd-sidebar {
   grid-area: sidebar;
-  background-color: var(--azul-duende);
+  background-color: var(--color-sidebar);
   display: flex;
   flex-direction: column;
   justify-content: center;
