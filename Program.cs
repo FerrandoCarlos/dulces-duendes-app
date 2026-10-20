@@ -26,6 +26,7 @@ builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPrecioCalculador, PrecioCalculador>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<AppExceptionFilter>();
+builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
