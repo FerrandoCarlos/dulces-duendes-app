@@ -6,6 +6,20 @@
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
+    <input type="search" class="form-control mb-3" v-model="texto"
+           placeholder="Buscar producto por código o descripción..." />
+
+    <div class="btn-group mb-3" role="group" aria-label="Filtrar por estado de stock">
+        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'Todos' }"
+        @@click="estado = 'Todos'">Todos</button>
+        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'ConStock' }"
+        @@click="estado = 'ConStock'">Con stock</button>
+        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'StockBajo' }"
+        @@click="estado = 'StockBajo'">Stock bajo</button>
+        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'SinStock' }"
+        @@click="estado = 'SinStock'">Sin stock</button>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
@@ -37,6 +51,19 @@
             </tbody>
         </table>
     </div>
+    <nav v-if="totalPaginas>1" aria-label="Paginación de productos">
+        <ul class="pagination">
+            <li class="page-item" :class="{disabled: pagina === 1}">
+                <button type="button" class="page-link" @@click="irAPagina(pagina - 1)">Anterior</button>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Página {{pagina}} de {{totalPaginas}}</span>
+            </li>
+            <li class="page-item" :class="{disabled: pagina === totalPaginas}">
+                <button type="button" class="page-link" @@click="irAPagina(pagina + 1)">Siguiente</button>
+            </li>
+        </ul>
+    </nav>
     <p class="text-muted">Total: {{ total }}</p>
 </div>
 @section Scripts {
