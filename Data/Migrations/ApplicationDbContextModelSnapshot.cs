@@ -141,6 +141,42 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("TipoPago")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Tickets");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.TipoProducto", b =>
                 {
                     b.Property<int>("Id")
@@ -218,6 +254,23 @@ namespace DulcesDuendesApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoProducto");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId");
+
+                    b.HasOne("DulcesDuendesApp.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("DulcesDuendesApp.Models.Usuario", b =>
