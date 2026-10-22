@@ -109,3 +109,15 @@
   border-color: #d45f42;
   color: var(--white);
 }
+/* --- Componentes VUE --- */
+.dd-filtro-busqueda {
+  max-width: 320px;
+}
+
+.dd-filtro-tipo {
+  min-width: 220px;
+}
+
+.dd-selector-lista {
+  z-index: 1000;
+}

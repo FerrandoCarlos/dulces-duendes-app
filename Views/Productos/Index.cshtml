@@ -6,18 +6,18 @@
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
-    <input type="search" class="form-control mb-3" v-model="texto"
-           placeholder="Buscar producto por código o descripción..." />
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <input type="search" class="form-control dd-filtro-busqueda" v-model="texto"
+               placeholder="Buscar por código o descripción..." />
 
-    <div class="btn-group mb-3" role="group" aria-label="Filtrar por estado de stock">
-        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'Todos' }"
-        @@click="estado = 'Todos'">Todos</button>
-        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'ConStock' }"
-        @@click="estado = 'ConStock'">Con stock</button>
-        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'StockBajo' }"
-        @@click="estado = 'StockBajo'">Stock bajo</button>
-        <button type="button" class="btn btn-outline-primary" :class="{ active: estado === 'SinStock' }"
-        @@click="estado = 'SinStock'">Sin stock</button>
+        <div class="dd-filtro-tipo">
+            <selector-tipo v-model="tipoFiltro" permitir-todos placeholder="Todos los tipos"></selector-tipo>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Filtrar por estado de stock">
+            <button v-for="e in estados" :key="e.valor" type="button" class="btn btn-outline-primary"
+                    :class="{ active: estado === e.valor }" @@click="estado = e.valor">{{ e.texto }}</button>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -68,5 +68,7 @@
 </div>
 @section Scripts {
     <script src="~/lib/vue/vue.global.js"></script>
+    <script src="~/js/api.js" asp-append-version="true"></script>
+    <script src="~/js/componentes/selector-tipo.js" asp-append-version="true"></script>
     <script src="~/js/productos.js" asp-append-version="true"></script>
 }

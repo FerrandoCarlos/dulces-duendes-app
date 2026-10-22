@@ -10,8 +10,16 @@ createApp({
     const error = ref('');
     const texto = ref('');
     const estado = ref('Todos');
+    const tipoFiltro = ref(null);
     let temporizador;
     let numeroPedido = 0;
+
+    const estados = [
+      { valor: 'Todos', texto: 'Todos' },
+      { valor: 'ConStock', texto: 'Con stock' },
+      { valor: 'StockBajo', texto: 'Stock bajo' },
+      { valor: 'SinStock', texto: 'Sin stock' },
+    ];
 
     const formatoPrecio = (n) =>
       n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
@@ -25,14 +33,10 @@ createApp({
 
         if (estado.value !== 'Todos') params.set('estado', estado.value);
         if (texto.value.trim()) params.set('texto', texto.value.trim());
+        if (tipoFiltro.value)
+          params.set('tipoProductoId', String(tipoFiltro.value.id));
 
-        const resp = await fetch(`/ajax/productos?${params}`);
-        if (pedido !== numeroPedido) return;
-
-        if (resp.status === 401) {
-          window.location.href = '/Account/Login';
-          return;
-        }
+        const resp = await apiFetch(`/ajax/productos?${params}`);
         if (!resp.ok) throw new Error();
 
         const datos = await resp.json();
@@ -65,7 +69,7 @@ createApp({
       }, 400);
     });
 
-    watch(estado, () => {
+    watch([estado, tipoFiltro], () => {
       clearTimeout(temporizador);
       pagina.value = 1;
       cargar();
@@ -80,8 +84,12 @@ createApp({
       error,
       texto,
       estado,
+      tipoFiltro,
+      estados,
       formatoPrecio,
       irAPagina,
     };
   },
-}).mount('#app-productos');
+})
+  .component('selector-tipo', SelectorTipo)
+  .mount('#app-productos');
