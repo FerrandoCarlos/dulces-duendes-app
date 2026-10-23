@@ -32,5 +32,24 @@ namespace DulcesDuendesApp.Repositories.Implementations
         {
             return await _context.Usuarios.CountAsync();
         }
+
+        public async Task<Usuario?> ObtenerPorId(int id)
+        {
+            return await _context.Usuarios
+                .Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.Id == id && u.Activo);
+        }
+
+        public async Task<bool> ExisteEmail(string email, int idExcluido)
+        {
+            return await _context.Usuarios
+                .AnyAsync(u => u.Email == email && u.Id != idExcluido);
+        }
+
+        public async Task Actualizar(Usuario usuario)
+        {
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+        }
     }
 }
