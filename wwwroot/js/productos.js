@@ -1,4 +1,4 @@
-const { createApp, ref, onMounted, watch } = Vue;
+const { createApp, ref, computed, onMounted, watch } = Vue;
 
 createApp({
   setup() {
@@ -30,7 +30,6 @@ createApp({
       error.value = '';
       try {
         const params = new URLSearchParams({ page: String(pagina.value) });
-
         if (estado.value !== 'Todos') params.set('estado', estado.value);
         if (texto.value.trim()) params.set('texto', texto.value.trim());
         if (tipoFiltro.value)
@@ -59,7 +58,147 @@ createApp({
       cargar();
     };
 
-    onMounted(cargar);
+    // ---- Formulario de alta y edición ----
+    const modalEl = ref(null);
+    let modal;
+    const formVacio = () => ({
+      id: null,
+      codigoBarra: '',
+      descripcion: '',
+      tipo: null,
+      stock: 0,
+      precioCosto: 0,
+      porcentajeGanancia: 0,
+    });
+    const form = ref(formVacio());
+    const errorGeneral = ref('');
+    const erroresCampo = ref({});
+    const guardando = ref(false);
+    const esEdicion = computed(() => form.value.id !== null);
+
+    const limpiarErrores = () => {
+      errorGeneral.value = '';
+      erroresCampo.value = {};
+    };
+
+    const abrirNuevo = () => {
+      form.value = formVacio();
+      limpiarErrores();
+      modal.show();
+    };
+
+    const abrirEditar = (p) => {
+      form.value = {
+        id: p.id,
+        codigoBarra: p.codigoBarra,
+        descripcion: p.descripcion,
+        tipo: { id: p.tipoProductoId, tipo: p.tipoProductoNombre },
+        stock: p.stock,
+        precioCosto: p.precioCosto,
+        porcentajeGanancia: p.porcentajeGanancia,
+      };
+      limpiarErrores();
+      modal.show();
+    };
+
+    const normalizarErrores = (errors) =>
+      Object.fromEntries(
+        Object.entries(errors).map(([campo, mensajes]) => [
+          campo.charAt(0).toLowerCase() + campo.slice(1),
+          mensajes[0],
+        ])
+      );
+
+    const guardar = async () => {
+      if (guardando.value) return;
+      guardando.value = true;
+      limpiarErrores();
+      try {
+        const f = form.value;
+        const cuerpo = {
+          codigoBarra: f.codigoBarra.trim(),
+          descripcion: f.descripcion.trim(),
+          tipoProductoId: f.tipo?.id ?? 0,
+          stock: Number(f.stock),
+          precioCosto: Number(f.precioCosto),
+          porcentajeGanancia: Number(f.porcentajeGanancia),
+        };
+        const resp = await apiFetch(
+          esEdicion.value ? `/ajax/productos/${f.id}` : '/ajax/productos',
+          {
+            method: esEdicion.value ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cuerpo),
+          }
+        );
+
+        if (resp.ok) {
+          modal.hide();
+          await cargar();
+          return;
+        }
+        if (resp.status === 404) {
+          errorGeneral.value = 'El producto ya no existe.';
+          return;
+        }
+
+        const datos = await resp.json().catch(() => null);
+        if (datos?.mensaje) errorGeneral.value = datos.mensaje;
+        else if (datos?.errors)
+          erroresCampo.value = normalizarErrores(datos.errors);
+        else errorGeneral.value = 'No se pudo guardar.';
+      } catch {
+        errorGeneral.value = 'No se pudo guardar.';
+      } finally {
+        guardando.value = false;
+      }
+    };
+
+    // ---- Baja ----
+    const modalBajaEl = ref(null);
+    let modalBaja;
+    const aBorrar = ref(null);
+    const errorBaja = ref('');
+    const borrando = ref(false);
+
+    const abrirBaja = (p) => {
+      aBorrar.value = p;
+      errorBaja.value = '';
+      modalBaja.show();
+    };
+
+    const confirmarBaja = async () => {
+      if (borrando.value || !aBorrar.value) return;
+      borrando.value = true;
+      errorBaja.value = '';
+      try {
+        const resp = await apiFetch(`/ajax/productos/${aBorrar.value.id}`, {
+          method: 'DELETE',
+        });
+
+        // 404 significa que ya no existía: se refresca igual.
+        if (!resp.ok && resp.status !== 404) {
+          const datos = await resp.json().catch(() => null);
+          errorBaja.value = datos?.mensaje ?? 'No se pudo eliminar.';
+          return;
+        }
+
+        // Si era el único de la página, se vuelve a la anterior.
+        if (items.value.length === 1 && pagina.value > 1) pagina.value--;
+        modalBaja.hide();
+        await cargar();
+      } catch {
+        errorBaja.value = 'No se pudo eliminar.';
+      } finally {
+        borrando.value = false;
+      }
+    };
+
+    onMounted(() => {
+      cargar();
+      modal = new bootstrap.Modal(modalEl.value);
+      modalBaja = new bootstrap.Modal(modalBajaEl.value);
+    });
 
     watch(texto, () => {
       clearTimeout(temporizador);
@@ -88,6 +227,21 @@ createApp({
       estados,
       formatoPrecio,
       irAPagina,
+      modalEl,
+      form,
+      esEdicion,
+      errorGeneral,
+      erroresCampo,
+      guardando,
+      abrirNuevo,
+      abrirEditar,
+      guardar,
+      modalBajaEl,
+      aBorrar,
+      errorBaja,
+      borrando,
+      abrirBaja,
+      confirmarBaja,
     };
   },
 })
