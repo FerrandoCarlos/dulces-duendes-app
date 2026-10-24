@@ -1,4 +1,5 @@
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Common.Validation;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
@@ -90,6 +91,28 @@ namespace DulcesDuendesApp.Services.Implementations
 
             return usuario;
         }
+
+        public async Task CambiarPassword(int id, string passwordActual, string passwordNueva)
+        {
+            if (string.IsNullOrEmpty(passwordActual) || string.IsNullOrEmpty(passwordNueva))
+                throw new AppException("Completá la contraseña actual y la nueva.");
+
+            if (passwordNueva.Length < LimitesUsuario.PasswordMinima || passwordNueva.Length > LimitesUsuario.PasswordMaxima)
+                throw new AppException($"La nueva contraseña debe tener entre {LimitesUsuario.PasswordMinima} y {LimitesUsuario.PasswordMaxima} caracteres.");
+
+            var usuario = await ObtenerExistente(id);
+
+            var resultado = _hasher.VerifyHashedPassword(usuario, usuario.PasswordHash, passwordActual);
+            if (resultado == PasswordVerificationResult.Failed)
+                throw new AppException("La contraseña actual es incorrecta.");
+
+            if (passwordActual == passwordNueva)
+                throw new AppException("La nueva contraseña debe ser distinta de la actual.");
+
+            usuario.PasswordHash = _hasher.HashPassword(usuario, passwordNueva);
+            await _repositorio.Actualizar(usuario);
+        }
+
         private async Task<Usuario> ObtenerExistente(int id)
         {
             return await _repositorio.ObtenerPorId(id) ?? throw new AppException("El usuario no existe.");

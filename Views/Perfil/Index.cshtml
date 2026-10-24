@@ -1,5 +1,6 @@
 @using DulcesDuendesApp.Common.Auth
 @using DulcesDuendesApp.Models.ViewModels
+@using DulcesDuendesApp.Common.Validation
 @model PerfilViewModel
 
 @{
@@ -83,6 +84,35 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+    <div class="card perfil-password">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Cambiar contraseña</h2>
+
+            <form asp-action="CambiarPassword" method="post">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="password-actual" class="form-label">Contraseña actual</label>
+                        <input id="password-actual" type="password" name="PasswordActual" class="form-control"
+                               autocomplete="current-password" required />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="password-nueva" class="form-label">Nueva contraseña</label>
+                        <input id="password-nueva" type="password" name="PasswordNueva" class="form-control"
+                               autocomplete="new-password" minlength="@LimitesUsuario.PasswordMinima"
+                               maxlength="@LimitesUsuario.PasswordMaxima" required />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="password-confirmar" class="form-label">Repetir contraseña</label>
+                        <input id="password-confirmar" type="password" name="ConfirmarPassword" class="form-control"
+                               autocomplete="new-password" required />
+                    </div>
+                </div>
+
+                <p class="text-muted small">Mínimo @LimitesUsuario.PasswordMinima caracteres.</p>
+                <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
             </form>
         </div>
     </div>

@@ -100,6 +100,31 @@ namespace DulcesDuendesApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarPassword(CambiarPasswordViewModel modelo)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Revisá los datos ingresados.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _usuarioService.CambiarPassword(User.ObtenerId(), modelo.PasswordActual, modelo.PasswordNueva);
+                TempData["Exito"] = "Contraseña actualizada.";
+            }
+            catch (AppException ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task ReemitirSesion(Usuario usuario)
         {
             var actual = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);

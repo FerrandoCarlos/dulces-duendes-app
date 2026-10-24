@@ -11,5 +11,6 @@ namespace DulcesDuendesApp.Services.Interfaces
         Task<Usuario> ActualizarPerfil(int id, string nombre, string apellido, string email);
         Task<Usuario> CambiarAvatar(int id, Stream imagen);
         Task<Usuario> QuitarAvatar(int id);
+        Task CambiarPassword(int id, string passwordActual, string passwordNueva);
     }
 }
