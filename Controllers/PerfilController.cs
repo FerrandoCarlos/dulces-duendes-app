@@ -82,6 +82,24 @@ namespace DulcesDuendesApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuitarAvatar()
+        {
+            try
+            {
+                var usuario = await _usuarioService.QuitarAvatar(User.ObtenerId());
+                await ReemitirSesion(usuario);
+                TempData["Exito"] = "Foto eliminada.";
+            }
+            catch (AppException ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task ReemitirSesion(Usuario usuario)
         {
             var actual = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);

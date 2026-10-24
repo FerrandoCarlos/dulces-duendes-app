@@ -23,6 +23,12 @@
   font-size: 1.1rem;
 }
 
+.avatar-xl {
+  width: 96px;
+  height: 96px;
+  font-size: 2.2rem;
+}
+
 /* --- Menú de usuario --- */
 .user-menu .dropdown-toggle-noicon::after {
   display: none;
@@ -120,4 +126,34 @@
 
 .dd-selector-lista {
   z-index: 1000;
+}
+/* --- Perfil --- */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 640px);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.perfil-archivo-nombre {
+  display: inline-block;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+@media (max-width: 991.98px) {
+  .perfil-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.btn-primary {
+  --bs-btn-bg: var(--azul-duende);
+  --bs-btn-border-color: var(--azul-duende);
+  --bs-btn-hover-bg: #123a85;
+  --bs-btn-hover-border-color: #123a85;
+  --bs-btn-active-bg: #123a85;
+  --bs-btn-active-border-color: #123a85;
 }

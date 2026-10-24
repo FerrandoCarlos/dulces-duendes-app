@@ -76,6 +76,20 @@ namespace DulcesDuendesApp.Services.Implementations
             _almacen.Eliminar(urlVieja);
             return usuario;
         }
+
+        public async Task<Usuario> QuitarAvatar(int id)
+        {
+            var usuario = await ObtenerExistente(id);
+            var urlVieja = usuario.AvatarUrl;
+            if (string.IsNullOrEmpty(urlVieja)) return usuario;
+
+            usuario.AvatarUrl = null;
+            await _repositorio.Actualizar(usuario);
+
+            _almacen.Eliminar(urlVieja);
+
+            return usuario;
+        }
         private async Task<Usuario> ObtenerExistente(int id)
         {
             return await _repositorio.ObtenerPorId(id) ?? throw new AppException("El usuario no existe.");
