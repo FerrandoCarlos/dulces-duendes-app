@@ -7,117 +7,117 @@
     ViewData["Title"] = "Mi perfil";
     var avatar = User.ObtenerAvatar("avatar-xl");
 }
+<div class="perfil-pagina">
+    <h1 class="h3 mb-3">Mi perfil</h1>
 
-<h1 class="h3 mb-3">Mi perfil</h1>
+    @if (TempData["Exito"] is string exito)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @exito
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @error
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
 
-@if (TempData["Exito"] is string exito)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @exito
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-}
-@if (TempData["Error"] is string error)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @error
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-}
+    <div class="perfil-grid ">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="d-flex justify-content-center mb-3">
+                    <partial name="_Avatar" model="avatar" />
+                </div>
+                <h2 class="h5 mb-1">@User.Identity?.Name</h2>
+                <p class="text-muted small mb-3">JPG, PNG o WebP<br />Hasta 2 MB</p>
 
-<div class="perfil-grid">
-    <div class="card">
-        <div class="card-body text-center">
-            <div class="d-flex justify-content-center mb-3">
-                <partial name="_Avatar" model="avatar" />
-            </div>
-            <h2 class="h5 mb-1">@User.Identity?.Name</h2>
-            <p class="text-muted small mb-3">JPG, PNG o WebP<br />Hasta 2 MB</p>
-
-            <form asp-action="CambiarAvatar" method="post" enctype="multipart/form-data">
-                <input type="file" id="avatar-archivo" name="avatar" class="d-none"
-                       accept="image/jpeg,image/png,image/webp" />
-                <label for="avatar-archivo" class="btn btn-outline-secondary w-100 mb-2">
-                    <i class="bi bi-image"></i>
-                    <span id="avatar-nombre" class="perfil-archivo-nombre">Elegir imagen</span>
-                </label>
-                <button type="submit" id="avatar-enviar" class="btn btn-primary w-100" disabled>
-                    <i class="bi bi-camera"></i> Cambiar foto
-                </button>
-            </form>
-
-            @if (!string.IsNullOrEmpty(avatar.Url))
-            {
-                <form asp-action="QuitarAvatar" method="post" class="mt-2">
-                    <button type="submit" class="btn btn-outline-danger w-100">
-                        <i class="bi bi-trash"></i> Quitar foto
+                <form asp-action="CambiarAvatar" method="post" enctype="multipart/form-data">
+                    <input type="file" id="avatar-archivo" name="avatar" class="d-none"
+                           accept="image/jpeg,image/png,image/webp" />
+                    <label for="avatar-archivo" class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="bi bi-image"></i>
+                        <span id="avatar-nombre" class="perfil-archivo-nombre">Elegir imagen</span>
+                    </label>
+                    <button type="submit" id="avatar-enviar" class="btn btn-primary w-100" disabled>
+                        <i class="bi bi-camera"></i> Cambiar foto
                     </button>
                 </form>
-            }
+
+                @if (!string.IsNullOrEmpty(avatar.Url))
+                {
+                    <form asp-action="QuitarAvatar" method="post" class="mt-2">
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            <i class="bi bi-trash"></i> Quitar foto
+                        </button>
+                    </form>
+                }
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-body d-flex flex-column">
-            <h2 class="h5 mb-3">Mis datos</h2>
+        <div class="card">
+            <div class="card-body d-flex flex-column">
+                <h2 class="h5 mb-3">Mis datos</h2>
 
-            <form asp-action="Index" method="post" novalidate>
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <form asp-action="Index" method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Nombre" class="form-label">Nombre</label>
-                        <input asp-for="Nombre" class="form-control" />
-                        <span asp-validation-for="Nombre" class="text-danger small"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Nombre" class="form-label">Nombre</label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Apellido" class="form-label">Apellido</label>
+                            <input asp-for="Apellido" class="form-control" />
+                            <span asp-validation-for="Apellido" class="text-danger small"></span>
+                        </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Apellido" class="form-label">Apellido</label>
-                        <input asp-for="Apellido" class="form-control" />
-                        <span asp-validation-for="Apellido" class="text-danger small"></span>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label">Email</label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
-            </form>
+                    <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+                </form>
+            </div>
         </div>
-    </div>
-    <div class="card perfil-password">
-        <div class="card-body">
-            <h2 class="h5 mb-3">Cambiar contraseña</h2>
+        <div class="card perfil-password">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Cambiar contraseña</h2>
 
-            <form asp-action="CambiarPassword" method="post">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="password-actual" class="form-label">Contraseña actual</label>
-                        <input id="password-actual" type="password" name="PasswordActual" class="form-control"
-                               autocomplete="current-password" required />
+                <form asp-action="CambiarPassword" method="post">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="password-actual" class="form-label">Contraseña actual</label>
+                            <input id="password-actual" type="password" name="PasswordActual" class="form-control"
+                                   autocomplete="current-password" required />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="password-nueva" class="form-label">Nueva contraseña</label>
+                            <input id="password-nueva" type="password" name="PasswordNueva" class="form-control"
+                                   autocomplete="new-password" minlength="@LimitesUsuario.PasswordMinima"
+                                   maxlength="@LimitesUsuario.PasswordMaxima" required />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="password-confirmar" class="form-label">Repetir contraseña</label>
+                            <input id="password-confirmar" type="password" name="ConfirmarPassword" class="form-control"
+                                   autocomplete="new-password" required />
+                        </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="password-nueva" class="form-label">Nueva contraseña</label>
-                        <input id="password-nueva" type="password" name="PasswordNueva" class="form-control"
-                               autocomplete="new-password" minlength="@LimitesUsuario.PasswordMinima"
-                               maxlength="@LimitesUsuario.PasswordMaxima" required />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="password-confirmar" class="form-label">Repetir contraseña</label>
-                        <input id="password-confirmar" type="password" name="ConfirmarPassword" class="form-control"
-                               autocomplete="new-password" required />
-                    </div>
-                </div>
 
-                <p class="text-muted small">Mínimo @LimitesUsuario.PasswordMinima caracteres.</p>
-                <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
-            </form>
+                    <p class="text-muted small">Mínimo @LimitesUsuario.PasswordMinima caracteres.</p>
+                    <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script src="~/js/perfil.js" asp-append-version="true"></script>
 }
