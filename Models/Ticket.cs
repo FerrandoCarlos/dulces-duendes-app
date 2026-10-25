@@ -28,8 +28,10 @@ namespace DulcesDuendesApp.Models
         public DateTime Fecha { get; set; } = DateTime.Now;
         public TipoPago TipoPago { get; set; }
         [Precision(18,2)]
+        [Range(0, double.MaxValue, ErrorMessage = MensajesValidacion.NoNegativo)]
         public decimal Total { get; set; }
 
         public bool Activo { get; set; } = true;
+        public ICollection<DetalleTicket> Detalles { get; set; } = new List<DetalleTicket>();
     }    
 }
