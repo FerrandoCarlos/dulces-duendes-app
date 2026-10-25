@@ -7,5 +7,8 @@ namespace DulcesDuendesApp.Repositories.Interfaces
         Task<Usuario?> ObtenerPorEmail(string email);
         Task<int> ObtenerCantidad();
         Task<int> Alta(Usuario usuario);
+        Task<Usuario?> ObtenerPorId(int id);
+        Task<bool> ExisteEmail(string email, int idExcluido);
+        Task Actualizar(Usuario usuario);
     }
 }

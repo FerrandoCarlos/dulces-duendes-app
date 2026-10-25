@@ -1,5 +1,6 @@
-using System.Security.Claims;
+using DulcesDuendesApp.Common.Auth;
 using DulcesDuendesApp.Models.ViewModels;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DulcesDuendesApp.ViewComponents
@@ -10,15 +11,8 @@ namespace DulcesDuendesApp.ViewComponents
         {
             var nombre = UserClaimsPrincipal.Identity?.Name ?? string.Empty;
             var email = UserClaimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-            var avatar = new AvatarViewModel(UserClaimsPrincipal.FindFirst("AvatarUrl")?.Value, ObtenerIniciales(nombre));
 
-            return View(new UserMenuViewModel(nombre, email, avatar));
+            return View(new UserMenuViewModel(nombre, email, UserClaimsPrincipal.ObtenerAvatar()));
         }
-
-        private static string ObtenerIniciales(string nombreCompleto)=>
-            string.Concat(nombreCompleto
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Take(2)
-            .Select(p=> char.ToUpper(p[0])));
     }
 }

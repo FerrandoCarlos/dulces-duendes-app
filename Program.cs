@@ -7,6 +7,7 @@ using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DulcesDuendesApp.Common.Configuration;
+using DulcesDuendesApp.Common.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +27,21 @@ builder.Services.AddScoped<IPrecioCalculador, PrecioCalculador>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<AppExceptionFilter>();
+builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
+builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();
+builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
+        options.Events.OnRedirectToLogin = AuthEventos.AlRedirigirALogin;
+        options.Events.OnRedirectToAccessDenied = AuthEventos.AlRedirigirAAccesoDenegado;
     });
 
 builder.Services.AddAuthorization(options =>
@@ -63,6 +71,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();

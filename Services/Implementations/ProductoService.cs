@@ -4,21 +4,22 @@ using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-
 namespace DulcesDuendesApp.Services.Implementations
 {
     public class ProductoService : IProductoService
     {
-        private const string MsgCodigoDuplicado = "Ya existe un producto con esse código de barra.";
+        private const string MsgCodigoDuplicado = "Ya existe un producto con ese código de barras.";
+        private const string MsgTipoInexistente = "El tipo de producto seleccionado no existe.";
 
         private readonly IProductoRepository _repo;
         private readonly IPrecioCalculador _precios;
+        private readonly ITipoProductoRepository _tipos;
 
-        public ProductoService(IProductoRepository repo, IPrecioCalculador precios)
+        public ProductoService(IProductoRepository repo, IPrecioCalculador precios, ITipoProductoRepository tipos)
         {
             _repo = repo;
             _precios = precios;
+            _tipos = tipos;
         }
 
         public Task<PagedResult<Producto>> ObtenerPaginado(ProductoFiltro filtro, PageRequest page) => _repo.ObtenerPaginado(filtro, page);
@@ -32,17 +33,12 @@ namespace DulcesDuendesApp.Services.Implementations
         {
             if (await _repo.ObtenerPorCodigoBarra(producto.CodigoBarra) != null) throw new AppException(MsgCodigoDuplicado);
 
+            if (!await _tipos.Existe(producto.TipoProductoId)) throw new AppException(MsgTipoInexistente);
+
             CalcularPrecios(producto);
             producto.Activo = true;
 
-            try
-            {
-                return await _repo.Alta(producto);
-            }
-            catch (DbUpdateException)
-            {
-                throw new AppException(MsgCodigoDuplicado);
-            }
+            return await _repo.Alta(producto);
         }
         public async Task<bool> Modificar(Producto datos)
         {
@@ -53,23 +49,19 @@ namespace DulcesDuendesApp.Services.Implementations
             if (conMismoCodigo != null && conMismoCodigo.Id != producto.Id)
                 throw new AppException(MsgCodigoDuplicado);
 
+            if (!await _tipos.Existe(datos.TipoProductoId)) throw new AppException(MsgTipoInexistente);
+
             producto.CodigoBarra = datos.CodigoBarra;
             producto.Descripcion = datos.Descripcion;
             producto.TipoProductoId = datos.TipoProductoId;
             producto.Stock = datos.Stock;
             producto.PrecioCosto = datos.PrecioCosto;
             producto.PorcentajeGanancia = datos.PorcentajeGanancia;
-            CalcularPrecios(producto);
 
-            try
-            {
-                await _repo.Modificar(producto);
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                throw new AppException(MsgCodigoDuplicado);
-            }
+            CalcularPrecios(producto);
+            await _repo.Modificar(producto);
+            return true;
+
         }
 
         public async Task<bool> Baja(int id)

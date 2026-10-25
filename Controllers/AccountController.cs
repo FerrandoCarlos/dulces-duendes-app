@@ -1,12 +1,10 @@
+using DulcesDuendesApp.Common.Auth;
 using DulcesDuendesApp.Models.ViewModels;
 using DulcesDuendesApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Security.Claims;
-
 namespace DulcesDuendesApp.Controllers
 {
     public class AccountController : Controller
@@ -40,18 +38,7 @@ namespace DulcesDuendesApp.Controllers
             }
 
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name,$"{usuario.Nombre} {usuario.Apellido}"),
-                new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Rol?.Nombre ?? string.Empty),
-                // new Claim()
-
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+            var principal = UsuarioClaims.CrearPrincipal(usuario);
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,

@@ -16,6 +16,7 @@ namespace DulcesDuendesApp.Models
 
         [Required(ErrorMessage = MensajesValidacion.Requerido)]
         [StringLength(8, ErrorMessage = MensajesValidacion.LongitudMaxima)]
+        [Dni]
         public string Dni { get; set; } = string.Empty;
 
         [Required(ErrorMessage = MensajesValidacion.Requerido)]

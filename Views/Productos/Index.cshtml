@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = "Productos";
+}
+<div id="app-productos">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Productos</h1>
+        <button type="button" class="btn btn-primary" @@click="abrirNuevo">
+            <i class="bi bi-plus-lg"></i> Nuevo producto
+        </button>
+    </div>
+
+    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <input type="search" class="form-control dd-filtro-busqueda" v-model="texto"
+               placeholder="Buscar por código o descripción..." />
+
+        <div class="dd-filtro-tipo">
+            <selector-tipo v-model="tipoFiltro" permitir-todos placeholder="Todos los tipos"></selector-tipo>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Filtrar por estado de stock">
+            <button v-for="e in estados" :key="e.valor" type="button" class="btn btn-outline-primary"
+                    :class="{ active: estado === e.valor }" @@click="estado = e.valor">{{ e.texto }}</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Tipo</th>
+                    <th class="text-end">Stock</th>
+                    <th class="text-end">Precio venta</th>
+                    <th class="text-end">Cuenta corriente</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="cargando">
+                    <td colspan="7" class="text-center text-muted">Cargando...</td>
+                </tr>
+                <tr v-else-if="items.length === 0">
+                    <td colspan="7" class="text-center text-muted">No hay productos.</td>
+                </tr>
+                <tr v-for="p in items" :key="p.id">
+                    <td>{{ p.codigoBarra }}</td>
+                    <td>{{ p.descripcion }}</td>
+                    <td>{{ p.tipoProductoNombre }}</td>
+                    <td class="text-end">{{ p.stock }}</td>
+                    <td class="text-end">{{ formatoPrecio(p.precioVenta) }}</td>
+                    <td class="text-end">{{ formatoPrecio(p.precioCuentaCorriente) }}</td>
+                    <td class="text-end text-nowrap">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Editar"
+                            @@click="abrirEditar(p)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-1" title="Eliminar"
+                            @@click="abrirBaja(p)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav v-if="totalPaginas>1" aria-label="Paginación de productos">
+        <ul class="pagination">
+            <li class="page-item" :class="{disabled: pagina === 1}">
+                <button type="button" class="page-link" @@click="irAPagina(pagina - 1)">Anterior</button>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Página {{pagina}} de {{totalPaginas}}</span>
+            </li>
+            <li class="page-item" :class="{disabled: pagina === totalPaginas}">
+                <button type="button" class="page-link" @@click="irAPagina(pagina + 1)">Siguiente</button>
+            </li>
+        </ul>
+    </nav>
+
+    <p class="text-muted">Total: {{ total }}</p>
+
+    @* Modal alta usuario *@
+    <div class="modal fade" tabindex="-1" ref="modalEl" aria-labelledby="titulo-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" @@submit.prevent="guardar" novalidate>
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="titulo-modal">{{ esEdicion ? 'Editar producto' : 'Nuevo producto' }}
+                    </h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div v-if="errorGeneral" class="alert alert-danger">{{ errorGeneral }}</div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="f-codigo">Código de barras</label>
+                        <input id="f-codigo" type="text" class="form-control" v-model="form.codigoBarra"
+                               :class="{ 'is-invalid': erroresCampo.codigoBarra }" />
+                        <div class="invalid-feedback">{{ erroresCampo.codigoBarra }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="f-descripcion">Descripción</label>
+                        <input id="f-descripcion" type="text" class="form-control" v-model="form.descripcion"
+                               :class="{ 'is-invalid': erroresCampo.descripcion }" />
+                        <div class="invalid-feedback">{{ erroresCampo.descripcion }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de producto</label>
+                        <selector-tipo v-model="form.tipo"></selector-tipo>
+                        <div v-if="erroresCampo.tipoProductoId" class="text-danger small mt-1">
+                            {{ erroresCampo.tipoProductoId }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4 mb-3">
+                            <label class="form-label" for="f-stock">Stock</label>
+                            <input id="f-stock" type="number" min="0" class="form-control" v-model="form.stock"
+                                   :class="{ 'is-invalid': erroresCampo.stock }" />
+                            <div class="invalid-feedback">{{ erroresCampo.stock }}</div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label" for="f-costo">Costo</label>
+                            <input id="f-costo" type="number" min="0" step="0.01" class="form-control"
+                                   v-model="form.precioCosto" :class="{ 'is-invalid': erroresCampo.precioCosto }" />
+                            <div class="invalid-feedback">{{ erroresCampo.precioCosto }}</div>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label class="form-label" for="f-ganancia">% ganancia</label>
+                            <input id="f-ganancia" type="number" min="0" step="0.01" class="form-control"
+                                   v-model="form.porcentajeGanancia"
+                                   :class="{ 'is-invalid': erroresCampo.porcentajeGanancia }" />
+                            <div class="invalid-feedback">{{ erroresCampo.porcentajeGanancia }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" :disabled="guardando">
+                        {{ guardando ? 'Guardando...' : 'Guardar' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @* Modal confirmación baja *@
+    <div class="modal fade" tabindex="-1" ref="modalBajaEl" aria-labelledby="titulo-baja" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="titulo-baja">Eliminar producto</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="errorBaja" class="alert alert-danger">{{ errorBaja }}</div>
+                    <p class="mb-0">
+                        ¿Eliminar <strong>{{ aBorrar?.descripcion }}</strong>?
+                        Dejará de aparecer en el listado.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" :disabled="borrando" @@click="confirmarBaja">
+                        {{ borrando ? 'Eliminando...' : 'Eliminar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/lib/vue/vue.global.js"></script>
+    <script src="~/js/api.js" asp-append-version="true"></script>
+    <script src="~/js/componentes/selector-tipo.js" asp-append-version="true"></script>
+    <script src="~/js/productos.js" asp-append-version="true"></script>
+}

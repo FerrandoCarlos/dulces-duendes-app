@@ -13,13 +13,13 @@ namespace DulcesDuendesApp.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = MensajesValidacion.Requerido)]
-        [StringLength(14, ErrorMessage = MensajesValidacion.LongitudMaxima)]
+        [StringLength(LimitesProducto.CodigoBarraMax, ErrorMessage = MensajesValidacion.LongitudMaxima)]
         [CodigoBarra]
         [Display(Name = "Código de Barras")]
         public string CodigoBarra { get; set; } = string.Empty;
 
         [Required(ErrorMessage = MensajesValidacion.Requerido)]
-        [StringLength(200, ErrorMessage = MensajesValidacion.LongitudMaxima)]
+        [StringLength(LimitesProducto.DescripcionMax, ErrorMessage = MensajesValidacion.LongitudMaxima)]
         [Display(Name = "Descripción")]
         public string Descripcion { get; set; } = string.Empty;
 

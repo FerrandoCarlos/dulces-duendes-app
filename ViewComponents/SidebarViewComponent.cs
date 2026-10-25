@@ -7,7 +7,6 @@ namespace DulcesDuendesApp.ViewComponents
     {
         private static readonly List<SidebarItemViewModel> Items = new()
         {
-            new("Perfil", "bi-person-circle", "Perfil", "Index"),
             new("Clientes", "bi-people","Clientes","Index"),
             new("Ventas","bi-cart3","Home","Index"),
             new("Productos", "bi-box-seam","Productos", "Index"),
