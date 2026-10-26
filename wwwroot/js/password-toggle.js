@@ -7,34 +7,40 @@ document.querySelectorAll('input[type="password"]').forEach((input) => {
   const boton = document.createElement('button');
   boton.type = 'button';
   boton.className = 'password-toggle-btn d-none';
-  boton.setAttribute('aria-label', 'Mostrar contraseña');
-  boton.setAttribute('aria-pressed', 'false');
-  boton.innerHTML = '<i class="bi bi-eye-slash"></i>';
+  boton.innerHTML = '<i class="bi"></i>';
   wrapper.appendChild(boton);
 
-  input.addEventListener('input', () => {
-    if (input.value.length > 0) {
-      boton.classList.remove('d-none');
-    } else {
-      boton.classList.add('d-none');
-      input.type = 'password';
-      boton.setAttribute('aria-pressed', 'false');
-      boton.firstElementChild.className = 'bi bi-eye';
-    }
-  });
+  const icono = boton.firstElementChild;
 
-  boton.addEventListener('click', () => {
-    const visible = input.type === 'password';
-    input.type = visible ? 'text' : 'password';
-
+  // Único lugar donde se decide cómo se ve el botón: depende solo de input.type.
+  const actualizar = () => {
+    const visible = input.type === 'text';
+    icono.className = visible ? 'bi bi-eye' : 'bi bi-eye-slash';
     boton.setAttribute('aria-pressed', String(visible));
     boton.setAttribute(
       'aria-label',
       visible ? 'Ocultar contraseña' : 'Mostrar contraseña'
     );
+  };
 
-    boton.firstElementChild.className = visible
-      ? 'bi bi-eye'
-      : 'bi bi-eye-slash';
+  // Campo vacío: sin botón y siempre oculto.
+  const sincronizar = () => {
+    if (input.value.length === 0) {
+      input.type = 'password';
+      boton.classList.add('d-none');
+    } else {
+      boton.classList.remove('d-none');
+    }
+    actualizar();
+  };
+
+  input.addEventListener('input', sincronizar);
+
+  boton.addEventListener('click', () => {
+    input.type = input.type === 'password' ? 'text' : 'password';
+    actualizar();
+    input.focus();
   });
+
+  sincronizar();
 });
