@@ -1,0 +1,81 @@
+@model DulcesDuendesApp.Models.ViewModels.TiposProductoIndexViewModel
+@using DulcesDuendesApp.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Tipos de producto";
+    var paginador = new PaginadorViewModel(
+        Model.Resultado.Page,
+        Model.Resultado.TotalPages,
+        p => Url.Action("Index", new { texto = Model.Texto, page = p }) ?? "#");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Tipos de producto</h1>
+    <div class="d-flex gap-2">
+        <a asp-controller="Productos" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a productos
+        </a>
+        <a asp-action="Crear" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nuevo tipo
+        </a>
+    </div>
+</div>
+
+@if (TempData["Exito"] is string exito)
+{
+    <div class="alert alert-success">@exito</div>
+}
+@if (TempData["Error"] is string errorMsg)
+{
+    <div class="alert alert-danger">@errorMsg</div>
+}
+
+<form class="d-flex gap-2 mb-3" method="get" data-busqueda-auto>
+    <input type="search" name="texto" value="@Model.Texto" class="form-control dd-filtro-busqueda"
+           placeholder="Buscar tipo..." />
+    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Resultado.Items.Any())
+            {
+                <tr>
+                    <td colspan="2" class="text-center text-muted">No hay tipos de producto.</td>
+                </tr>
+            }
+            @foreach (var t in Model.Resultado.Items)
+            {
+                var mensaje = $"¿Eliminar el tipo {t.Tipo}? Esta acción no se puede deshacer.";
+
+                <tr>
+                    <td>@t.Tipo</td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="Editar" asp-route-id="@t.Id" class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form asp-action="Eliminar" method="post" class="d-inline" data-confirmar="@mensaje"
+                              data-confirmar-titulo="Eliminar tipo" data-confirmar-boton="Eliminar">
+                            <input type="hidden" name="id" value="@t.Id">
+                            <input type="hidden" name="texto" value="@Model.Texto">
+                            <input type="hidden" name="page" value="@Model.Resultado.Page">
+                            <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<partial name="_Paginador" model="paginador" />
+<p class="text-muted">Total: @Model.Resultado.TotalCount</p>

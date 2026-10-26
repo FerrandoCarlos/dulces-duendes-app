@@ -4,9 +4,14 @@
 <div id="app-productos">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Productos</h1>
-        <button type="button" class="btn btn-primary" @@click="abrirNuevo">
-            <i class="bi bi-plus-lg"></i> Nuevo producto
-        </button>
+        <div class="d-flex gap-2">
+            <a asp-controller="TiposProducto" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-tags"></i> Tipos de producto
+            </a>
+            <button type="button" class="btn btn-primary" @@click="abrirNuevo">
+                <i class="bi bi-plus-lg"></i> Nuevo producto
+            </button>
+        </div>
     </div>
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
