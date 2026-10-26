@@ -127,7 +127,9 @@
 .dd-selector-lista {
   z-index: 1000;
 }
-
+.dd-form-angosto {
+  max-width: 560px;
+}
 /* --- Perfil --- */
 .perfil-pagina {
   max-width: 62rem;
@@ -170,4 +172,38 @@
   --bs-btn-hover-border-color: #123a85;
   --bs-btn-active-bg: #123a85;
   --bs-btn-active-border-color: #123a85;
+}
+/* --- Password Visibilidad --- */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.password-wrapper input[type='password'],
+.password-wrapper input[type='text'] {
+  width: 100%;
+  padding-right: 40px !important;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 1.1rem;
+  box-shadow: none !important;
+}
+.password-toggle-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.password-toggle-btn:hover {
+  color: #212529;
 }

@@ -8,6 +8,7 @@ using DulcesDuendesApp.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DulcesDuendesApp.Common.Configuration;
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Common.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,6 @@ builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
@@ -54,8 +54,6 @@ builder.Services.AddAuthorization(options =>
 builder.Services.Configure<NegocioOptions>(
     builder.Configuration.GetSection(NegocioOptions.Seccion));
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -66,7 +64,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -99,8 +96,8 @@ static async Task SeedAsync(ApplicationDbContext context, IUsuarioService usuari
     if (!context.Roles.Any())
     {
         context.Roles.AddRange(
-            new Rol { Nombre = "Administrador" },
-            new Rol { Nombre = "Empleado" }
+            new Rol { Nombre = NombresRol.Administrador },
+            new Rol { Nombre = NombresRol.Empleado }
         );
         await context.SaveChangesAsync();
     }
@@ -117,5 +114,17 @@ static async Task SeedAsync(ApplicationDbContext context, IUsuarioService usuari
             RolId = rolAdmin.Id
         };
         await usuarioService.Alta(admin, "Admin123!");
+    }
+    if (!await context.Usuarios.AnyAsync(u => u.Email == "empleado@dulcesduendes.com"))
+    {
+        var rolEmpleado = context.Roles.First(r => r.Nombre == NombresRol.Empleado);
+
+        await usuarioService.Alta(new Usuario
+        {
+            Email = "empleado@dulcesduendes.com",
+            Nombre = "Empleado",
+            Apellido = "Demo",
+            RolId = rolEmpleado.Id
+        }, "Empleado123!");
     }
 }

@@ -1,0 +1,19 @@
+@model DulcesDuendesApp.Models.ViewModels.PaginadorViewModel
+
+@if (Model.TotalPaginas > 1)
+{
+    <nav aria-label="Paginación">
+        <ul class="pagination">
+            <li class="page-item @(Model.Pagina == 1 ? "disabled" : "")">
+                <a class="page-link" href="@(Model.Pagina == 1 ? "#" : Model.UrlPagina(Model.Pagina - 1))">Anterior</a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Página @Model.Pagina de @Model.TotalPaginas</span>
+            </li>
+            <li class="page-item @(Model.Pagina == Model.TotalPaginas ? "disabled" : "")">
+                <a class="page-link"
+                   href="@(Model.Pagina == Model.TotalPaginas ? "#" : Model.UrlPagina(Model.Pagina + 1))">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+}

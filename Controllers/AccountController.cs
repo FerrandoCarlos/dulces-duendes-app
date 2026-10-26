@@ -48,6 +48,11 @@ namespace DulcesDuendesApp.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
