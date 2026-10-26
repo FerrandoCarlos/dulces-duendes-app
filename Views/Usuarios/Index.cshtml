@@ -1,0 +1,102 @@
+@model DulcesDuendesApp.Models.ViewModels.UsuariosIndexViewModel
+@using DulcesDuendesApp.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Usuarios";
+    var paginador = new PaginadorViewModel(
+        Model.Resultado.Page,
+        Model.Resultado.TotalPages,
+        p => Url.Action("Index", new { texto = Model.Texto, page = p }));
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Usuarios</h1>
+    <a asp-action="Crear" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nuevo usuario
+    </a>
+</div>
+@if (TempData["Exito"] is string exito)
+{
+    <div class="alert alert-success">@exito</div>
+}
+@if (TempData["Error"] is string errorMsg)
+{
+    <div class="alert alert-danger">@errorMsg</div>
+}
+<form class="d-flex gap-2 mb-3" method="get">
+    <input type="search" name="texto" value="@Model.Texto" class="form-control dd-filtro-busqueda"
+           placeholder="Buscar por nombre, apellido o email...">
+    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+</form>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Resultado.Items.Any())
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No hay usuarios.</td>
+                </tr>
+            }
+            @foreach (var u in Model.Resultado.Items)
+            {
+                var mensaje = u.Activo
+                    ? $"¿Desactivar a {u.NombreCompleto}? No podrá iniciar sesión."
+                    : $"¿Reactivar a {u.NombreCompleto}?";
+
+                var claseEstado = u.Activo ? "bg-success" : "bg-secondary";
+                var textoEstado = u.Activo ? "Activo" : "Inactivo";
+                var claseAccion = u.Activo ? "btn-outline-danger" : "btn-outline-success";
+                var tituloAccion = u.Activo ? "Desactivar" : "Reactivar";
+                var iconoAccion = u.Activo ? "bi-person-x" : "bi-person-check";
+                var tituloConfirmar = u.Activo ? "Desactivar usuario" : "Reactivar usuario";
+                var botonConfirmar = u.Activo ? "Desactivar" : "Reactivar";
+                var tipoConfirmar = u.Activo ? "peligro" : "primario";
+
+                <tr>
+                    <td>
+                        @u.NombreCompleto
+                        @if (u.EsActual)
+                        {
+                            <span class="badge bg-info text-dark ms-1">Vos</span>
+                        }
+                    </td>
+                    <td>@u.Email</td>
+                    <td>@u.Rol</td>
+                    <td>
+                        <span class="badge @claseEstado">@textoEstado</span>
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="Editar" asp-route-id="@u.Id" class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        @if (!u.EsActual)
+                        {
+                            <form asp-action="CambiarEstado" method="post" class="d-inline" data-confirmar="@mensaje"
+                                  data-confirmar="@tituloConfirmar" data-confirmar="@botonConfirmar"
+                                  data-confirmar="@tipoConfirmar">
+                                <input type="hidden" name="id" value="@u.Id">
+                                <input type="hidden" name="activo" value="@(u.Activo ? "false" : "true")">
+                                <input type="hidden" name="texto" value="@Model.Texto">
+                                <input type="hidden" name="page" value="@Model.Resultado.Page">
+                                <button type="submit" class="btn btn-sm ms-1 @claseAccion" title="@tituloAccion">
+                                    <i class="bi @iconoAccion"></i>
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<partial name="_Paginador" model="paginador" />
+<p class="text-muted">Total: @Model.Resultado.TotalCount</p>
