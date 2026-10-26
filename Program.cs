@@ -30,6 +30,8 @@ builder.Services.AddScoped<AppExceptionFilter>();
 builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
 builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();
 builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
+builder.Services.AddScoped<IImagenProductoRepository, ImagenProductoRepository>();
+builder.Services.AddScoped<IImagenProductoService, ImagenProductoService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

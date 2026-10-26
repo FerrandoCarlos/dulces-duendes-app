@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<TipoProducto> TiposProducto { get; set; }
     public DbSet<Producto> Productos { get; set; }
+    public DbSet<ImagenProducto> ImagenesProducto { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -25,6 +26,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithMany()
             .HasForeignKey(p => p.TipoProductoId)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ImagenProducto>()
+            .HasOne(i => i.Producto)
+            .WithMany(p => p.Imagenes)
+            .HasForeignKey(i => i.ProductoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
 }
