@@ -11,7 +11,7 @@ namespace DulcesDuendesApp.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = MensajesValidacion.Requerido)]
-        [StringLength(50, ErrorMessage = MensajesValidacion.LongitudMaxima)]
+        [StringLength(LimitesProducto.TipoMax, ErrorMessage = MensajesValidacion.LongitudMaxima)]
         [Display(Name = "Tipo de Producto")]
         public string Tipo { get; set; } = string.Empty;
     }
