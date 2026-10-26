@@ -36,7 +36,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
         public async Task<int> Alta(Ticket ticket)
         {
-            _context.Tickets.Add(ticket);
+            await _context.Tickets.AddAsync(ticket);
             await _context.SaveChangesAsync();
             return ticket.Id;
         }

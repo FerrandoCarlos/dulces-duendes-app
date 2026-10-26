@@ -1,3 +1,4 @@
+using DulcesDuendesApp.Common.Exceptions;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
@@ -26,6 +27,10 @@ namespace DulcesDuendesApp.Services.Implementations
 
         public async Task<int> Alta(Ticket ticket)
         {
+            if (ticket.Detalles == null || !ticket.Detalles.Any())
+            {
+                throw new AppException("El ticket debe contener al menos un producto");
+            }
             return await _repositorio.Alta(ticket);
         }
 
