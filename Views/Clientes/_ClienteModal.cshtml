@@ -1,0 +1,41 @@
+<div class="modal fade" id="modalCliente" tabindex="-1" ref="modalElement">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ editando ? 'Editar Cliente' : 'Nuevo Cliente' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form v-on:submit.prevent="guardarCliente">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">DNI</label>
+                        <input type="text" class="form-control" v-model="form.dni" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" v-model="form.nombre" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" class="form-control" v-model="form.apellido" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" v-model="form.telefono" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" v-model="form.direccion" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" :disabled="guardando">
+                        <span v-if="guardando" class="spinner-border spinner-border-sm me-1"></span>
+                        {{ editando ? 'Guardar Cambios' : 'Crear' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

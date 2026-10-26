@@ -5,6 +5,7 @@ using DulcesDuendesApp.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Common.Pagination;
 
 namespace DulcesDuendesApp.Controllers
 {
@@ -21,16 +22,23 @@ namespace DulcesDuendesApp.Controllers
 
         // GET: /Clientes
 
-        public async Task<IActionResult> Index(int paginaNro = 1, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Index(string? busqueda, int paginaNro = 1)
         {
-            try {
-                var lista = await _service.ObtenerClientes(cancellationToken);
-                return View(lista);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = $"Ha ocurrido un error al cargar las vistas de Clientes. {ex.Message}"});
-            }
+            var pageRequest = new PageRequest(page: paginaNro, pageSize: PageRequest.DefaultPageSize);
+            PagedResult<Cliente> resultado = await _service.ObtenerPaginado(pageRequest, busqueda);
+
+            ViewBag.Busqueda = busqueda;
+
+            return View(resultado);
+
+        }
+        
+        public async Task<IActionResult> ObtenerPaginadoJson(string? busqueda, int paginaNro = 1)
+        {
+            var pageRequest = new PageRequest(page: paginaNro, pageSize: PageRequest.DefaultPageSize);
+            PagedResult<Cliente> resultado = await _service.ObtenerPaginado(pageRequest, busqueda);
+
+            return Ok(resultado);
         }
 
         // GET : /Clientes/Create
@@ -44,7 +52,7 @@ namespace DulcesDuendesApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Guardar([FromBody] Cliente cliente, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Guardar([FromBody] Cliente cliente)
         {
             if (!ModelState.IsValid)
             {
@@ -55,12 +63,12 @@ namespace DulcesDuendesApp.Controllers
             { 
                 if (cliente.Id == 0)
                 {
-                    var nuevoId = await _service.Alta(cliente, cancellationToken);
+                    var nuevoId = await _service.Alta(cliente);
                     return Ok(new { success = true, message = "Cliente creado correctamente", data = new { id = nuevoId} });
                 }
                 else
                 {
-                    await _service.Modificacion(cliente.Id, cliente, cancellationToken);
+                    await _service.Modificacion(cliente.Id, cliente);
                     return Ok(new { success = true, message = "Cliente modificado con éxito"});
                 }
             } catch (AppException ex) 
@@ -77,11 +85,11 @@ namespace DulcesDuendesApp.Controllers
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Eliminar(int id, CancellationToken cancellationToken = default) 
+        public async Task<IActionResult> Eliminar(int id) 
         {
             try 
             {
-                await _service.Baja(id, cancellationToken);
+                await _service.Baja(id);
                 return Ok(new { success = true, message = "Cliente dado de baja correctamente"});
             }
             catch (AppException ex) 

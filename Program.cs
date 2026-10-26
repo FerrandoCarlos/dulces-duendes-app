@@ -26,6 +26,8 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPrecioCalculador, PrecioCalculador>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<AppExceptionFilter>();
 builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
 builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();

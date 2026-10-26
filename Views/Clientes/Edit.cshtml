@@ -1,0 +1,17 @@
+@model DulcesDuendesApp.Models.Cliente
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<div class="form-panel">
+    <div class="form-panel-header is-edit">
+        <h2>Editar Cliente</h2>
+    </div>
+    <div class="form-panel-body">
+        @await Html.PartialAsync("_Form", Model)
+    </div>
+</div>
+
+
+@section Scripts {
+}

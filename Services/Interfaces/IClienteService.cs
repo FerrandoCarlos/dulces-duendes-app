@@ -1,3 +1,4 @@
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
@@ -8,10 +9,12 @@ namespace DulcesDuendesApp.Services.Interfaces
 {
     public interface IClienteService
     {
-        Task<Cliente?> ObtenerPorId(int id, CancellationToken cancellationToken = default);
-        Task<int> Alta(Cliente cliente, CancellationToken cancellationToken = default);
-        Task<int> Modificacion(int id, Cliente cliente, CancellationToken cancellationToken = default);
-        Task<int> Baja(int id, CancellationToken cancellationToken = default);
-        Task<IList<Cliente>> ObtenerClientes(CancellationToken cancellationToken = default);
+        Task<Cliente?> ObtenerPorId(int id);
+        Task<int> Alta(Cliente cliente);
+        Task<int> Modificacion(int id, Cliente cliente);
+        Task<int> Baja(int id);
+        //Task<IList<Cliente>> ObtenerClientes();
+
+        Task<PagedResult<Cliente>> ObtenerPaginado(PageRequest pageRequest, string? busqueda);
     }
 }

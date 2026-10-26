@@ -1,3 +1,4 @@
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Data;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
@@ -14,37 +15,69 @@ namespace DulcesDuendesApp.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<Cliente?> ObtenerPorId(int id, CancellationToken cancellationToken = default)
+        public async Task<Cliente?> ObtenerPorId(int id)
         {
-            return await _context.Clientes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+            return await _context.Clientes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<int> Alta(Cliente cliente, CancellationToken cancellationToken = default)
+        public async Task<int> Alta(Cliente cliente)
         {
             _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync();
             return cliente.Id;
         }
 
-        public async Task<int> Modificacion(int id, Cliente cliente, CancellationToken cancellationToken = default)
+        public async Task<int> Modificacion(int id, Cliente cliente)
         {
             _context.Clientes.Update(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync();
             return id;
         }
 
-        public async Task<int> Baja(int id, CancellationToken cancellationToken = default)
+        public async Task<int> Baja(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(new object[] { id }, cancellationToken);
+            var cliente = await _context.Clientes.FindAsync(id);
             if (cliente != null)
             {
                 cliente.Activo = false;
-                await _context.SaveChangesAsync(cancellationToken);
+                await _context.SaveChangesAsync();
             }
             return id;
         }
-        public async Task<IList<Cliente>> ObtenerClientes(CancellationToken cancellationToken = default){
-            return await _context.Clientes.Where(c => c.Activo).AsNoTracking().ToListAsync(cancellationToken);
+        /*public async Task<IList<Cliente>> ObtenerClientes(){
+            return await _context.Clientes.Where(c => c.Activo).AsNoTracking().ToListAsync();
+        }*/
+
+        public async Task<PagedResult<Cliente>> ObtenerPaginado(PageRequest pageRequest, string? busqueda)
+        {
+            var query = _context.Clientes
+                .AsNoTracking()
+                .Where(c => c.Activo);
+
+            if (!string.IsNullOrEmpty(busqueda))
+            {
+                string q = busqueda.Trim().ToLower();
+                query = query.Where(c =>
+                    c.Nombre.ToLower().Contains(q) ||
+                    c.Apellido.ToLower().Contains(q));
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(c => c.Apellido)
+                .ThenBy(c => c.Nombre)
+                .Skip(pageRequest.Skip)
+                .Take(pageRequest.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<Cliente>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = pageRequest.Page,
+                PageSize = pageRequest.PageSize
+            };
         }
     }
 }

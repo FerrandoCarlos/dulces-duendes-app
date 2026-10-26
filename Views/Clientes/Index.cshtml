@@ -1,8 +1,7 @@
-@model IList<DulcesDuendesApp.Models.Cliente>
+@using DulcesDuendesApp.Common.Pagination
+@model PagedResult<DulcesDuendesApp.Models.Cliente>
 @{
     ViewData[index: "Title"] = "Clientes";
-    int paginaNro = ViewBag.PaginaNro ?? 1;
-    int totalPaginas = ViewBag.TotalPaginas ?? 1;
 }
 
 <div class="page-header">
@@ -17,67 +16,101 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<div id="alertContainer"></div>
+<script id="clientes-data-json" type="application/json">
+    @Html.Raw(Json.Serialize(Model))
+</script>
 
-<div class="table-panel">
+<form id="antiForgeryForm" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
 
-    <p class="d-flex gap-2 align-items-center">
-        <a asp-action="Create" class="btn btn-primary">Nuevo Cliente</a>
-    </p>
+<div id="app-clientes" v-cloak>
+    
+    <div v-if="error" class="alert alert-danger">{{ error }}
+        <button type="button" class="btn-close" v-on:click="error = ''"></button>
+    </div>
 
-    <table class="table table-striped" id="tablaClientes">
-        <thead>
-            <tr>
-                <th>DNI</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Teléfono</th>
-                <th>Direccion</th>
-                <th>Monto</th>
-            </tr>
-        </thead>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <input type="text" class="form-control" v-model="busqueda" v-on:keyup.enter="buscarClientes(1)"
+                   placeholder="Buscar por Nombre o Apellido...">
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-primary" v-on:click="abrirModalCrear">
+                <i class="bi bi-plus-circle"></i> Nuevo Cliente
+            </button>
+        </div>
+    </div>
 
-        <tbody>
-            @foreach (var cliente in Model)
-            {
-                <tr id="fila-@cliente.Id">
-                    <td>@cliente.Dni</td>
-                    <td>@cliente.Nombre</td>
-                    <td>@cliente.Apellido</td>
-                    <td>@cliente.Telefono</td>
-                    <td>@(cliente.Direccion == null ? "Sin dirección asociada" : cliente.Direccion)/td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@cliente.Id"
-                           class="btn btn-sm btn-outline-secondary">Editar</a>
+    <div class="table-panel">
+        <table class="table table-striped" id="tablaClientes">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="cargando">
+                    <td colspan="6" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <span class="ms-2">Cargando clientes...</span>
+                    </td>
+                </tr>
+                <tr v-else-if="clientes.length === 0">
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No se encontraron clientes que coincidan con la búsqueda.
+                    </td>
+                </tr>
+                <tr v-else v-for="cliente in clientes" :key="cliente.id">
+                    <td>{{ cliente.dni }}</td>
+                    <td>{{ cliente.nombre }}</td>
+                    <td>{{ cliente.apellido }}</td>
+                    <td>{{ cliente.telefono || 'Sin teléfono' }}</td>
+                    <td>{{ cliente.direccion || 'Sin dirección asociada' }}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-warning me-1" v-on:click="abrirModalEditar(cliente)">
+                            Editar
+                        </button>
                         @if (User.IsInRole("Administrador"))
                         {
-                            <button type="button" class="btn btn-sm btn-outline-danger btn-eliminar" data-id="@cliente.Id">
-                                Eliminar
-                            </button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    v-on:click="pedirConfirmacionBaja(cliente)">Eliminar</button>
                         }
                     </td>
                 </tr>
-            }
-        </tbody>
-    </table>
-    @if (!Model.Any())
-    {
-        <p>No hay clientes cargados.</p>
-    }
+            </tbody>
+        </table>
 
-    @if (totalPaginas > 1)
-    {
-        <nav>
-            <ul class="pagination">
-                @for (int i = 1; i <= totalPaginas; i++)
-                {
-                    <li class="page-item @(i == paginaNro ? "active" : "")">
-                        <a class="page-link" asp-action="Index" asp-route-paginaNro="@i">@i</a>
-                    </li>
-                }
+        <nav v-if="totalPaginas > 1" class="mt-3">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item" :class="{ disabled: pagina <= 1 }">
+                    <button type="button" class="page-link" v-on:click="irAPagina(pagina - 1)">Anterior</button>
+                </li>
+                <li v-for="p in totalPaginas" :key="p" class="page-item" :class="{ active: p === pagina }">
+                    <button type="button" class="page-link" v-on:click="irAPagina(p)">{{ p }}</button>
+                </li>
+                <li class="page-item" :class="{ disabled: pagina >= totalPaginas }">
+                    <button type="button" class="page-link" v-on:click="irAPagina(pagina + 1)">Siguiente</button>
+                </li>
             </ul>
         </nav>
-    }
+    </div>
+
+    <partial name="_ClienteModal" model="null" />
+    <partial name="_ModalConfirmarBaja" model="null" />
 </div>
 @section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/js/clientes.js" asp-append-version="true"></script>
 }
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>

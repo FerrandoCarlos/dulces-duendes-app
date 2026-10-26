@@ -11,6 +11,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TipoProducto> TiposProducto { get; set; }
     public DbSet<Producto> Productos { get; set; }
     public DbSet<ImagenProducto> ImagenesProducto { get; set; }
+    public DbSet<Ticket> Tickets { get; set; }
+    public DbSet<DetalleTicket> DetalleTickets { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
