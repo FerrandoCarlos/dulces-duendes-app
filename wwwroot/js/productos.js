@@ -84,6 +84,7 @@ createApp({
     const abrirNuevo = () => {
       form.value = formVacio();
       limpiarErrores();
+      limpiarImagenes();
       modal.show();
     };
 
@@ -98,6 +99,8 @@ createApp({
         porcentajeGanancia: p.porcentajeGanancia,
       };
       limpiarErrores();
+      limpiarImagenes();
+      cargarImagenes(p.id);
       modal.show();
     };
 
@@ -194,12 +197,108 @@ createApp({
       }
     };
 
+    // ---- Imágenes ----
+    const maxImagenes = 5;
+    const imagenes = ref([]);
+    const imagenesCargando = ref(false);
+    const subiendo = ref(false);
+    const errorImagenes = ref('');
+    const imagenAConfirmar = ref(null);
+    const inputImagenes = ref(null);
+
+    let pedidoImagenes = 0;
+
+    const urlImagenes = (productoId) =>
+      `/ajax/productos/${productoId}/imagenes`;
+
+    const limpiarImagenes = () => {
+      pedidoImagenes++;
+      imagenes.value = [];
+      imagenesCargando.value = false;
+      errorImagenes.value = '';
+      imagenAConfirmar.value = null;
+    };
+
+    const cargarImagenes = async (productoId) => {
+      const pedido = ++pedidoImagenes;
+      imagenesCargando.value = true;
+      try {
+        const resp = await apiFetch(urlImagenes(productoId));
+        if (!resp.ok) throw new Error();
+        const datos = await resp.json();
+        if (pedido === pedidoImagenes) imagenes.value = datos;
+      } catch {
+        if (pedido === pedidoImagenes)
+          errorImagenes.value = 'No se pudieron cargar las imágenes.';
+      } finally {
+        if (pedido === pedidoImagenes) imagenesCargando.value = false;
+      }
+    };
+
+    const subirImagenes = async (evento) => {
+      const archivos = Array.from(evento.target.files ?? []);
+      if (archivos.length === 0 || subiendo.value) return;
+
+      const productoId = form.value.id;
+      subiendo.value = true;
+      errorImagenes.value = '';
+      try {
+        const cuerpo = new FormData();
+        archivos.forEach((a) => cuerpo.append('archivos', a));
+
+        const resp = await apiFetch(urlImagenes(productoId), {
+          method: 'POST',
+          body: cuerpo,
+        });
+
+        if (resp.ok) {
+          const nuevas = await resp.json();
+          if (form.value.id === productoId) imagenes.value.push(...nuevas);
+          return;
+        }
+        if (resp.status === 404) {
+          errorImagenes.value = 'El producto ya no existe.';
+          return;
+        }
+        if (resp.status === 413) {
+          errorImagenes.value = 'Las imágenes superan el tamaño permitido.';
+          return;
+        }
+        const datos = await resp.json().catch(() => null);
+        errorImagenes.value =
+          datos?.mensaje ?? 'No se pudieron subir las imágenes.';
+      } catch {
+        errorImagenes.value = 'No se pudieron subir las imágenes.';
+      } finally {
+        subiendo.value = false;
+        if (inputImagenes.value) inputImagenes.value.value = '';
+      }
+    };
+
+    const eliminarImagen = async (imagen) => {
+      const productoId = form.value.id;
+      errorImagenes.value = '';
+      try {
+        const resp = await apiFetch(`${urlImagenes(productoId)}/${imagen.id}`, {
+          method: 'DELETE',
+        });
+        if (!resp.ok && resp.status !== 404) throw new Error();
+        imagenes.value = imagenes.value.filter((i) => i.id !== imagen.id);
+      } catch {
+        errorImagenes.value = 'No se pudo eliminar la imagen.';
+      } finally {
+        imagenAConfirmar.value = null;
+      }
+    };
+
+    // ---- Ciclo de vida ----
     onMounted(() => {
       cargar();
       modal = new bootstrap.Modal(modalEl.value);
       modalBaja = new bootstrap.Modal(modalBajaEl.value);
     });
 
+    // ---- Observadores Reactivos ----
     watch(texto, () => {
       clearTimeout(temporizador);
       temporizador = setTimeout(() => {
@@ -242,6 +341,15 @@ createApp({
       borrando,
       abrirBaja,
       confirmarBaja,
+      maxImagenes,
+      imagenes,
+      imagenesCargando,
+      subiendo,
+      errorImagenes,
+      imagenAConfirmar,
+      inputImagenes,
+      subirImagenes,
+      eliminarImagen,
     };
   },
 })

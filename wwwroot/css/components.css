@@ -130,6 +130,45 @@
 .dd-form-angosto {
   max-width: 560px;
 }
+
+.dd-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.5rem;
+}
+
+.dd-galeria-item {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.dd-galeria-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dd-galeria-borrar {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.dd-galeria-confirmar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgb(23 42 82 / 0.85); /* --azul-noche con transparencia */
+}
+
 /* --- Perfil --- */
 .perfil-pagina {
   max-width: 62rem;
