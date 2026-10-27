@@ -15,7 +15,8 @@ namespace DulcesDuendesApp.Models.Dtos
                 PrecioCosto = p.PrecioCosto,
                 PorcentajeGanancia = p.PorcentajeGanancia,
                 PrecioVenta = p.PrecioVenta,
-                PrecioCuentaCorriente = p.PrecioCuentaCorriente
+                PrecioCuentaCorriente = p.PrecioCuentaCorriente,
+                ImagenesUrl = p.Imagenes.Select(i => i.Url).ToList()
             };
         }
         public static Producto ToEntity(this ProductoRequest r, int id = 0)

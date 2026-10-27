@@ -136,6 +136,7 @@ createApp({
         );
 
         if (resp.ok) {
+          imagenesModificadas = false;
           modal.hide();
           await cargar();
           return;
@@ -207,6 +208,7 @@ createApp({
     const inputImagenes = ref(null);
 
     let pedidoImagenes = 0;
+    let imagenesModificadas = false;
 
     const urlImagenes = (productoId) =>
       `/ajax/productos/${productoId}/imagenes`;
@@ -254,6 +256,7 @@ createApp({
         if (resp.ok) {
           const nuevas = await resp.json();
           if (form.value.id === productoId) imagenes.value.push(...nuevas);
+          imagenesModificadas = true;
           return;
         }
         if (resp.status === 404) {
@@ -284,6 +287,7 @@ createApp({
         });
         if (!resp.ok && resp.status !== 404) throw new Error();
         imagenes.value = imagenes.value.filter((i) => i.id !== imagen.id);
+        imagenesModificadas = true;
       } catch {
         errorImagenes.value = 'No se pudo eliminar la imagen.';
       } finally {
@@ -291,11 +295,28 @@ createApp({
       }
     };
 
+    // ---- Visor de imágenes ----
+    const modalImagenesEl = ref(null);
+    let modalImagenes;
+    const productoVisor = ref(null);
+
+    const abrirImagenes = (p) => {
+      productoVisor.value = p;
+      modalImagenes.show();
+    };
+
     // ---- Ciclo de vida ----
     onMounted(() => {
       cargar();
       modal = new bootstrap.Modal(modalEl.value);
       modalBaja = new bootstrap.Modal(modalBajaEl.value);
+      modalImagenes = new bootstrap.Modal(modalImagenesEl.value);
+
+      modalEl.value.addEventListener('hidden.bs.modal', () => {
+        if (!imagenesModificadas) return;
+        imagenesModificadas = false;
+        cargar();
+      });
     });
 
     // ---- Observadores Reactivos ----
@@ -350,6 +371,9 @@ createApp({
       inputImagenes,
       subirImagenes,
       eliminarImagen,
+      modalImagenesEl,
+      productoVisor,
+      abrirImagenes,
     };
   },
 })

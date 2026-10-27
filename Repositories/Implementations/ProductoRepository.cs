@@ -24,6 +24,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
         {
             return await _context.Productos
                 .Include(p => p.TipoProducto)
+                .Include(p => p.Imagenes.OrderBy(i => i.Id))
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -35,6 +36,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
             var items = await query
                 .Include(p => p.TipoProducto)
+                .Include(p => p.Imagenes.OrderBy(i => i.Id))
                 .OrderBy(p => p.Descripcion)
                 .ThenBy(p => p.Id)
                 .Skip(page.Skip)

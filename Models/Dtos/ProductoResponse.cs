@@ -12,5 +12,7 @@ namespace DulcesDuendesApp.Models.Dtos
         public decimal PorcentajeGanancia { get; set; }
         public decimal PrecioVenta { get; set; }
         public decimal PrecioCuentaCorriente { get; set; }
+        public List<string> ImagenesUrl { get; set; } = new();
+        public string? ImagenPrincipalUrl => ImagenesUrl.Count > 0 ? ImagenesUrl[0] : null;
     }
 }

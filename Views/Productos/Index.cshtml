@@ -58,14 +58,20 @@
                     <td class="text-end">{{ formatoPrecio(p.precioVenta) }}</td>
                     <td class="text-end">{{ formatoPrecio(p.precioCuentaCorriente) }}</td>
                     <td class="text-end text-nowrap">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Editar"
-                            @@click="abrirEditar(p)">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger ms-1" title="Eliminar"
-                            @@click="abrirBaja(p)">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <div class="d-inline-flex gap-1">
+                            <button v-if="p.imagenesUrl.length" type="button" class="btn btn-sm btn-outline-secondary"
+                                    title="Ver imágenes" @@click="abrirImagenes(p)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" title="Editar"
+                                @@click="abrirEditar(p)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                @@click="abrirBaja(p)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -221,6 +227,28 @@
                         <button type="button" class="btn btn-danger" :disabled="borrando" @@click="confirmarBaja">
                             {{ borrando ? 'Eliminando...' : 'Eliminar' }}
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* Modal visor de imágenes *@
+        <div class="modal fade" tabindex="-1" ref="modalImagenesEl" aria-labelledby="titulo-visor" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title h5" id="titulo-visor">{{ productoVisor?.descripcion }}</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div v-for="(url, i) in (productoVisor?.imagenesUrl ?? [])" :key="url" class="col-6 col-md-4">
+                                <img :src="url" class="dd-visor-img"
+                                     :alt="'Imagen ' + (i + 1) + ' de ' + productoVisor.descripcion" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
