@@ -5,6 +5,8 @@ namespace DulcesDuendesApp.Common.Filters
         Todos,
         ConStock,
         StockBajo,
-        SinStock
+        SinStock,
+        StockCritico
+
     }
 }

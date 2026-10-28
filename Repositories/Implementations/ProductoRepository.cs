@@ -87,6 +87,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
                 EstadoStock.ConStock => query.Where(p => p.Stock > 0),
                 EstadoStock.StockBajo => query.Where(p => p.Stock > 0 && p.Stock <= _stockBajo),
                 EstadoStock.SinStock => query.Where(p => p.Stock == 0),
+                EstadoStock.StockCritico => query.Where(p => p.Stock <= _stockBajo),
                 _ => query
             };
         }
