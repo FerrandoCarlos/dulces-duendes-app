@@ -35,6 +35,8 @@ document.querySelectorAll('input[type="password"]').forEach((input) => {
   };
 
   input.addEventListener('input', sincronizar);
+  input.addEventListener('change', sincronizar);
+  input.addEventListener('focus', sincronizar);
 
   boton.addEventListener('click', () => {
     input.type = input.type === 'password' ? 'text' : 'password';
@@ -43,4 +45,5 @@ document.querySelectorAll('input[type="password"]').forEach((input) => {
   });
 
   sincronizar();
+  setTimeout(sincronizar, 300);
 });
