@@ -79,5 +79,13 @@ namespace DulcesDuendesApp.Services.Implementations
             p.PrecioVenta = _precios.PrecioVenta(p.PrecioCosto, p.PorcentajeGanancia);
             p.PrecioCuentaCorriente = _precios.PrecioCuentaCorriente(p.PrecioCosto, p.PorcentajeGanancia);
         }
+
+        public async Task<IList<Producto>> BuscarPorDescripcion(string busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+                return new List<Producto>();
+
+            return await _repo.BuscarPorDescripcion(busqueda);
+        }
     }
 }

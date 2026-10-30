@@ -12,6 +12,6 @@ namespace DulcesDuendesApp.Services.Interfaces
         Task<int> Alta(Producto producto);
         Task<bool> Modificar(Producto producto);
         Task<bool> Baja(int id);
-
+        Task<IList<Producto>> BuscarPorDescripcion(string busqueda);
     }
 }

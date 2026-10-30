@@ -11,5 +11,6 @@ namespace DulcesDuendesApp.Repositories.Interfaces
         Task<Producto?> ObtenerPorCodigoBarra(string codigoBarra);
         Task<int> Alta(Producto producto);
         Task Modificar(Producto producto);
+        Task<IList<Producto>> BuscarPorDescripcion(string busqueda, int limite = 20);
     }
 }
