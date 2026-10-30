@@ -48,5 +48,12 @@ namespace DulcesDuendesApp.Services.Implementations
         {
             return await _repositorio.ObtenerPaginado(pageRequest, busqueda);
         }
+
+        public async Task<IList<Cliente>> BuscarPorNombre(string busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+                return new List<Cliente>();
+            return await _repositorio.BuscarPorNombre(busqueda);
+        }
     }
 }

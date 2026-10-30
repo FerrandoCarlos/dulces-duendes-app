@@ -11,5 +11,6 @@ namespace DulcesDuendesApp.Repositories.Interfaces
         Task<int> Baja(int id);
         //Task<IList<Cliente>> ObtenerClientes();
         Task<PagedResult<Cliente>> ObtenerPaginado(PageRequest pageRequest, string? busqueda);
+        Task<IList<Cliente>> BuscarPorNombre(string busqueda, int limite = 20);
     }
 }
