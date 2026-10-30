@@ -130,6 +130,55 @@
 .dd-form-angosto {
   max-width: 560px;
 }
+
+.dd-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.5rem;
+}
+
+.dd-galeria-item {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.dd-galeria-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dd-galeria-borrar {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.dd-galeria-confirmar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgb(23 42 82 / 0.85); /* --azul-noche con transparencia */
+}
+
+.dd-visor-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background-color: var(--white);
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+}
+
 /* --- Perfil --- */
 .perfil-pagina {
   max-width: 62rem;
@@ -173,37 +222,31 @@
   --bs-btn-active-bg: #123a85;
   --bs-btn-active-border-color: #123a85;
 }
-/* --- Password Visibilidad --- */
-.password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.password-wrapper input[type='password'],
-.password-wrapper input[type='text'] {
-  width: 100%;
-  padding-right: 40px !important;
-}
-.password-toggle-btn {
-  position: absolute;
-  right: 10px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6c757d;
-  font-size: 1.1rem;
-  box-shadow: none !important;
-}
-.password-toggle-btn:focus {
-  outline: none;
-  box-shadow: none;
+
+/* --- Dashboard --- */
+.dd-kpi {
+  border-left: 4px solid var(--azul-duende);
 }
 
-.password-toggle-btn:hover {
-  color: #212529;
+.dd-kpi-alerta {
+  border-left-color: var(--amarillo-dorado);
+}
+
+.dd-kpi-peligro {
+  border-left-color: var(--coral);
+}
+
+.dd-kpi-valor {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--azul-noche);
+}
+
+.dd-kpi-etiqueta {
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #5b6478;
 }

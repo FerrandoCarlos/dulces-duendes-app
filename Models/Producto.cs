@@ -55,6 +55,9 @@ namespace DulcesDuendesApp.Models
         [Display(Name = "Precio Cuenta Corriente")]
         public decimal PrecioCuentaCorriente { get; set; }
 
+        [BindNever]
+        public List<ImagenProducto> Imagenes { get; set; } = new();
+
         public bool Activo { get; set; } = true;
     }
 }

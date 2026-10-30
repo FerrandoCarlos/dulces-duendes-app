@@ -5,5 +5,6 @@ namespace DulcesDuendesApp.Common.Validation
         public const int CodigoBarraMax = 14;
         public const int DescripcionMax = 200;
         public const int TipoMax = 50;
+        public const int ImagenesMax = 5;
     }
 }

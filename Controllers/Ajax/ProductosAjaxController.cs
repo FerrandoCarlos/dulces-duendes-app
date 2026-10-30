@@ -23,14 +23,7 @@ namespace DulcesDuendesApp.Controllers.Ajax
         public async Task<ActionResult<PagedResult<ProductoResponse>>> Listar([FromQuery] ProductoFiltro filtro, int page = 1, int pageSize = PageRequest.DefaultPageSize)
         {
             var resultado = await _service.ObtenerPaginado(filtro, new PageRequest(page, pageSize));
-
-            return new PagedResult<ProductoResponse>
-            {
-                Items = resultado.Items.Select(p => p.ToResponse()).ToList(),
-                TotalCount = resultado.TotalCount,
-                Page = resultado.Page,
-                PageSize = resultado.PageSize
-            };
+            return resultado.ToResponse();
         }
 
         [HttpGet("{id:int}")]

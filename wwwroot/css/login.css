@@ -41,7 +41,7 @@
 .login-card .input-box .form-control {
   width: 100%;
   padding: 0.85rem 1rem 0.85rem 2.75rem;
-  border-radius: 999px;
+  border-radius: 20px;
   border: none;
   font-size: 0.85rem;
 }
@@ -59,7 +59,7 @@
   box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.5);
 }
 
-.login-card .input-box i {
+.login-card .input-box > i {
   position: absolute;
   left: 1rem;
   top: 50%;
@@ -94,7 +94,7 @@
   color: var(--azul-noche);
   font-weight: 700;
   border: none;
-  border-radius: 999px;
+  border-radius: 20px;
   padding: 0.85rem;
   margin-top: 0.5rem;
   width: 100%;

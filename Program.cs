@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using DulcesDuendesApp.Common.Configuration;
 using DulcesDuendesApp.Common.Exceptions;
 using DulcesDuendesApp.Common.Auth;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,17 +42,39 @@ builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();
 builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
 builder.Services.AddScoped<IDetalleTicketRepository, DetalleTicketRepository>();
 builder.Services.AddScoped<IDetalleTicketService, DetalleTicketService>();
+builder.Services.AddScoped<IImagenProductoRepository, ImagenProductoRepository>();
+builder.Services.AddScoped<IImagenProductoService, ImagenProductoService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEstadisticasRepository, EstadisticasRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// Auth Jwt
+var jwt = builder.Configuration.GetSection(JwtOptions.Seccion).Get<JwtOptions>() ?? new JwtOptions();
+if (jwt.Clave.Length < 32) throw new InvalidOperationException("Falta Jwt:Clave o es demasiado corta (mínimo 32 caracteres). Definila en appsettings.Development.json o con la variable de entorno Jwt__Clave.");
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Seccion));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.SlidingExpiration = true;
+    options.Events.OnRedirectToLogin = AuthEventos.AlRedirigirALogin;
+    options.Events.OnRedirectToAccessDenied = AuthEventos.AlRedirigirAAccesoDenegado;
+}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
-        options.SlidingExpiration = true;
-        options.Events.OnRedirectToLogin = AuthEventos.AlRedirigirALogin;
-        options.Events.OnRedirectToAccessDenied = AuthEventos.AlRedirigirAAccesoDenegado;
-    });
+        ValidateIssuer = true,
+        ValidIssuer = jwt.Emisor,
+        ValidateAudience = true,
+        ValidAudience = jwt.Audiencia,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Clave)),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -111,7 +136,7 @@ static async Task SeedAsync(ApplicationDbContext context, IUsuarioService usuari
 
     if (await usuarioService.ObtenerCantidad() == 0)
     {
-        var rolAdmin = context.Roles.First(r => r.Nombre == "Administrador");
+        var rolAdmin = context.Roles.First(r => r.Nombre == NombresRol.Administrador);
 
         var admin = new Usuario
         {

@@ -104,6 +104,32 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("DetalleTickets");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.ImagenProducto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("ImagenesProducto");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -298,6 +324,17 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.Navigation("Ticket");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.ImagenProducto", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Producto", "Producto")
+                        .WithMany("Imagenes")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
                 {
                     b.HasOne("DulcesDuendesApp.Models.TipoProducto", "TipoProducto")
@@ -335,6 +372,11 @@ namespace DulcesDuendesApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
+                {
+                    b.Navigation("Imagenes");
                 });
 
             modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
