@@ -18,7 +18,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
@@ -32,6 +37,8 @@ builder.Services.AddScoped<AppExceptionFilter>();
 builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
 builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();
 builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
+builder.Services.AddScoped<IDetalleTicketRepository, DetalleTicketRepository>();
+builder.Services.AddScoped<IDetalleTicketService, DetalleTicketService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

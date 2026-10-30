@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DulcesDuendesApp.Models;
-using DulcesDuendesApp.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Models.Dtos;
+using System.Security.Claims;
 
 namespace DulcesDuendesApp.Controllers
 {
@@ -21,7 +21,7 @@ namespace DulcesDuendesApp.Controllers
 
         // GET: /Tickets
 
-        public async Task<IActionResult> Index (int paginaNro = 1)
+        public async Task<IActionResult> Index(int paginaNro = 1)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace DulcesDuendesApp.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = $"Ha ocurrido un erroral cargar las vistas de Tickets. {ex.Message}"});
+                return BadRequest(new { success = false, message = $"Ha ocurrido un erroral cargar las vistas de Tickets. {ex.Message}" });
             }
         }
 
@@ -42,15 +42,16 @@ namespace DulcesDuendesApp.Controllers
             {
                 var detalles = await _detalleService.ObtenerPorTicketId(ticketId);
                 return Ok(detalles);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = $"Ha ocurrido un error al cargar las vistas de Detalles. {ex.Message}"});
+                return BadRequest(new { success = false, message = $"Ha ocurrido un error al cargar las vistas de Detalles. {ex.Message}" });
             }
         }
 
         // GET : /Tickets/Create
 
-        public async Task<IActionResult> Create ()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
@@ -59,36 +60,63 @@ namespace DulcesDuendesApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Guardar([FromBody] Ticket ticket)
+        public async Task<IActionResult> Guardar([FromBody] GuardarTicketDto dto)
         {
-            if (!ModelState.IsValid)
+            if (dto == null || dto.Detalles == null || !dto.Detalles.Any())
             {
-                var errores = ModelState.Where(kvp => kvp.Value?.Errors.Count > 0).SelectMany(kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage));
-                return BadRequest(new { success = false, message = string.Join(" ", errores)});
+                return BadRequest(new { success = false, message = "El ticket no contiene productos." });
             }
+
+            if (dto.TipoPago == TipoPago.CuentaCorriente && (!dto.ClienteId.HasValue || dto.ClienteId.Value <= 0))
+            {
+                return BadRequest(new { success = false, message = "Debe seleccionar un cliente para cobros en Cuenta Corriente." });
+            }
+
             try
             {
+                var claimUsuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                int usuarioIdActual = int.TryParse(claimUsuarioId, out var id) ? id : 1;
+
+                var ticket = new Ticket
+                {
+                    Id = dto.Id,
+                    UsuarioId = usuarioIdActual,
+                    ClienteId = dto.TipoPago == TipoPago.CuentaCorriente ? dto.ClienteId : null,
+                    TipoPago = dto.TipoPago,
+                    Fecha = DateTime.Now,
+                    Activo = true,
+                    Total = dto.Detalles.Sum(d => d.Cantidad * d.PrecioUnitario),
+                    Detalles = dto.Detalles.Select(d => new DetalleTicket
+                    {
+                        ProductoId = d.ProductoId,
+                        Cantidad = d.Cantidad,
+                        PrecioUnitario = d.PrecioUnitario,
+                        Subtotal = d.Cantidad * d.PrecioUnitario
+                    }).ToList()
+                };
+
                 if (ticket.Id == 0)
                 {
                     var nuevoId = await _service.Alta(ticket);
-                    return Ok(new { success = true, message = "Ticket creado correctamente", data = new { id = nuevoId}});
+                    return Ok(new { success = true, message = "Venta registrada correctamente.", id = nuevoId });
                 }
-                else
-                {
-                    await _service.Modificacion(ticket.Id, ticket);
-                    return Ok(new { success = true, message = "Ticket modificado con éxito."});
-                }
-            } catch (AppException ex)
+
+                await _service.Modificacion(ticket.Id, ticket);
+                return Ok(new { success = true, message = "Ticket modificado correctamente." });
+            }
+            catch (AppException ex)
             {
-                return BadRequest(new { success = false, message = ex.Message});
-            } catch (Exception ex)
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = $"Ocurrió un error inesperado al guardar el ticket. {ex.Message}"});
+                var mensajeReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        return StatusCode(500, new { success = false, message = $"Error en base de datos: {mensajeReal}" });
             }
         }
 
         // POST : /Tickets/Eliminar/ID
-        
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -97,15 +125,15 @@ namespace DulcesDuendesApp.Controllers
             try
             {
                 await _service.Baja(id);
-                return Ok(new { success = true, message = "Ticket dado de baja correctamente."});
+                return Ok(new { success = true, message = "Ticket dado de baja correctamente." });
             }
             catch (AppException ex)
             {
-                return BadRequest(new { success = false, message = ex.Message});
+                return BadRequest(new { success = false, message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = $"Ocurró un error inesperado al eliminar el ticket. {ex.Message}"});
+                return StatusCode(500, new { success = false, message = $"Ocurró un error inesperado al eliminar el ticket. {ex.Message}" });
             }
         }
 
