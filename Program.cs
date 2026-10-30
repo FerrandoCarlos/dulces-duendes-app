@@ -38,6 +38,8 @@ builder.Services.AddScoped<IAlmacenArchivos, AlmacenArchivos>();
 builder.Services.AddScoped<IImagenProductoRepository, ImagenProductoRepository>();
 builder.Services.AddScoped<IImagenProductoService, ImagenProductoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEstadisticasRepository, EstadisticasRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Auth Jwt
 var jwt = builder.Configuration.GetSection(JwtOptions.Seccion).Get<JwtOptions>() ?? new JwtOptions();

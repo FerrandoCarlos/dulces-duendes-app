@@ -12,6 +12,7 @@ namespace DulcesDuendesApp.ViewComponents
             new("Productos", "bi-box-seam","Productos", "Index"),
             new("Tickets", "bi-receipt","Tickets","Index"),
             new("Usuarios", "bi-person-gear", "Usuarios","Index",Rol:"Administrador"),
+            new("Panel", "bi-speedometer2","Dashboard","Index"),
         };
 
         public IViewComponentResult Invoke()
