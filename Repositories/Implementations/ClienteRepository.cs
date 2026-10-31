@@ -79,5 +79,17 @@ namespace DulcesDuendesApp.Repositories.Implementations
                 PageSize = pageRequest.PageSize
             };
         }
+        public async Task<IList<Cliente>> BuscarPorNombre(string busqueda, int limite = 20)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+            return new List<Cliente>();
+            var termino = busqueda.Trim().ToLower();
+            return await _context.Clientes
+                .AsNoTracking()
+                .Where(c => c.Activo && (c.Nombre.ToLower().Contains(termino) || c.Apellido.ToLower().Contains(termino)))
+                .OrderBy(c => c.Nombre)
+                .Take(limite)
+                .ToListAsync();
+        } 
     }
 }

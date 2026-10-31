@@ -81,16 +81,16 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
-                    b.Property<double>("PrecioUnitario")
+                    b.Property<decimal>("PrecioUnitario")
                         .HasPrecision(18, 2)
-                        .HasColumnType("double");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Subtotal")
+                    b.Property<decimal>("Subtotal")
                         .HasPrecision(18, 2)
-                        .HasColumnType("double");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("TicketId")
                         .HasColumnType("int");

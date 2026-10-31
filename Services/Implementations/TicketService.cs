@@ -1,4 +1,5 @@
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Data;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
@@ -9,10 +10,12 @@ namespace DulcesDuendesApp.Services.Implementations
     public class TicketService : ITicketService
     {
         private readonly ITicketRepository _repositorio;
+        private readonly ApplicationDbContext _context;
 
-        public TicketService(ITicketRepository repositorio)
+        public TicketService(ITicketRepository repositorio, ApplicationDbContext context)
         {
             _repositorio = repositorio;
+            _context = context;
         }
 
         public async Task<Ticket?> ObtenerPorId(int id)
@@ -31,7 +34,35 @@ namespace DulcesDuendesApp.Services.Implementations
             {
                 throw new AppException("El ticket debe contener al menos un producto");
             }
-            return await _repositorio.Alta(ticket);
+            
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                foreach (var detalle in ticket.Detalles)
+                {
+                    var producto = await _context.Productos.FindAsync(detalle.ProductoId);
+                    if (producto == null)
+                    {
+                        throw new AppException("El producto no existe.");
+                    }
+
+                    if (producto.Stock < detalle.Cantidad)
+                    {
+                        throw new AppException($"Stock insuficiente para el producto '{producto.Descripcion}'.");
+                    }
+                    producto.Stock -= detalle.Cantidad;
+                    _context.Productos.Update(producto);
+                }
+                await _context.Tickets.AddAsync(ticket);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return ticket.Id;
+            } catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<int> Modificacion(int id, Ticket ticket)

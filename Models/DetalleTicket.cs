@@ -23,10 +23,8 @@ namespace DulcesDuendesApp.Models
         public Producto? Producto { get ; set; }
         public int Cantidad { get; set; }
         [Precision(18,2)]
-        [Range(0, double.MaxValue, ErrorMessage = MensajesValidacion.NoNegativo)]
-        public double PrecioUnitario { get; set; }
+        public decimal PrecioUnitario { get; set; }
         [Precision(18,2)]
-        [Range(0, double.MaxValue, ErrorMessage = MensajesValidacion.NoNegativo)]
-        public double Subtotal { get; set; }
+        public decimal Subtotal { get; set; }
     }
 }

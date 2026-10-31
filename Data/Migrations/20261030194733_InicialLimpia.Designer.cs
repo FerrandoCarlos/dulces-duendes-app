@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DulcesDuendesApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261020194453_AgregarCliente")]
-    partial class AgregarCliente
+    [Migration("20261030194733_InicialLimpia")]
+    partial class InicialLimpia
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,66 @@ namespace DulcesDuendesApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.DetalleTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("DetalleTickets");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.ImagenProducto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("ImagenesProducto");
                 });
 
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
@@ -144,6 +204,42 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("TipoPago")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Tickets");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.TipoProducto", b =>
                 {
                     b.Property<int>("Id")
@@ -212,6 +308,36 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.DetalleTicket", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DulcesDuendesApp.Models.Ticket", "Ticket")
+                        .WithMany("Detalles")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.ImagenProducto", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Producto", "Producto")
+                        .WithMany("Imagenes")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
                 {
                     b.HasOne("DulcesDuendesApp.Models.TipoProducto", "TipoProducto")
@@ -223,6 +349,23 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.Navigation("TipoProducto");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId");
+
+                    b.HasOne("DulcesDuendesApp.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Usuario", b =>
                 {
                     b.HasOne("DulcesDuendesApp.Models.Rol", "Rol")
@@ -232,6 +375,16 @@ namespace DulcesDuendesApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
+                {
+                    b.Navigation("Imagenes");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Ticket", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 #pragma warning restore 612, 618
         }

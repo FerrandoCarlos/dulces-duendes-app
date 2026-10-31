@@ -41,12 +41,28 @@ namespace DulcesDuendesApp.Controllers
             return Ok(resultado);
         }
 
+        public async Task<IActionResult> BuscarClientesJson(string busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+            {
+                return Ok(new List<Cliente>());
+            }
+            try
+            {
+                var clientes = await _service.BuscarPorNombre(busqueda);
+                return Ok(clientes);
+            } catch (Exception ex) {
+                return StatusCode(500, new { success = false, message = $"Error al buscar clientes: {ex.Message}"});
+            }
+        }
+
         // GET : /Clientes/Create
 
         public IActionResult Create()
         {
             return View();
         }
+
 
         // POST: /Clientes/Guardar
 
