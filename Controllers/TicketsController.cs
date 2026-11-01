@@ -5,6 +5,8 @@ using DulcesDuendesApp.Services.Interfaces;
 using DulcesDuendesApp.Common.Exceptions;
 using DulcesDuendesApp.Models.Dtos;
 using System.Security.Claims;
+using DulcesDuendesApp.Common.Pagination;
+using System.Xml.XPath;
 
 namespace DulcesDuendesApp.Controllers
 {
@@ -21,17 +23,43 @@ namespace DulcesDuendesApp.Controllers
 
         // GET: /Tickets
 
-        public async Task<IActionResult> Index(int paginaNro = 1)
+        public async Task<IActionResult> Index(string? fechaDesde, string? fechaHasta, int paginaNro = 1)
         {
             try
             {
-                var lista = await _service.ObtenerTickets();
-                return View(lista);
+                var pageRequest = new PageRequest(page: paginaNro, pageSize: PageRequest.DefaultPageSize);
+                PagedResult<Ticket> pagedTickets = await _service.ObtenerPaginado(pageRequest, fechaDesde, fechaHasta);
+                return View(pagedTickets);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { success = false, message = $"Ha ocurrido un erroral cargar las vistas de Tickets. {ex.Message}" });
             }
+        }
+
+        public async Task<IActionResult> ObtenerTodosJson(string? fechaDesde, string? fechaHasta, int paginaNro = 1)
+        {
+            var pageRequest = new PageRequest(page: paginaNro, pageSize: PageRequest.DefaultPageSize);
+            PagedResult<Ticket> resultado = await _service.ObtenerPaginado(pageRequest, fechaDesde, fechaHasta);
+
+            var response = new PagedResult<object>
+            {
+                Page = resultado.Page,
+                PageSize = resultado.PageSize,
+                TotalCount = resultado.TotalCount,
+                Items = resultado.Items.Select(t => new
+                {
+                    id = t.Id,
+                    fecha = t.Fecha,
+                    usuarioNombre = t.Usuario != null ? $"{t.Usuario.Nombre} {t.Usuario.Apellido}" : "Sistema",
+                    clienteNombre = t.Cliente != null ? $"{t.Cliente.Nombre} {t.Cliente.Apellido}" : "Consumidor Final",
+                    tipoPago = t.TipoPago.ToString(),
+                    total = t.Total,
+                    activo = t.Activo
+                }).ToList()
+            };
+
+            return Ok(response);
         }
 
         // GET: Tickets/ObtenerDetallesJson/ID
@@ -40,12 +68,29 @@ namespace DulcesDuendesApp.Controllers
         {
             try
             {
+                var ticket = await _service.ObtenerPorId(ticketId);
+                if (ticket == null)
+                {
+                    return NotFound(new { success = false, message = "Ticket no encontrado." });
+                }
+
                 var detalles = await _detalleService.ObtenerPorTicketId(ticketId);
-                return Ok(detalles);
+
+                return Ok(new
+                {
+                    id = ticket.Id,
+                    fecha = ticket.Fecha,
+                    usuarioNombre = ticket.Usuario != null ? $"{ticket.Usuario.Nombre} {ticket.Usuario.Apellido}" : "Sistema",
+                    clienteNombre = ticket.Cliente != null ? $"{ticket.Cliente.Nombre} {ticket.Cliente.Apellido}" : "Consumidor Final",
+                    tipoPago = ticket.TipoPago.ToString(),
+                    total = ticket.Total,
+                    detalles = detalles
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { success = false, message = $"Ha ocurrido un error al cargar las vistas de Detalles. {ex.Message}" });
+                var mensajeReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return BadRequest(new { success = false, message = $"Error al obtener el detalle: {mensajeReal}" });
             }
         }
 
@@ -111,16 +156,16 @@ namespace DulcesDuendesApp.Controllers
             catch (Exception ex)
             {
                 var mensajeReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        return StatusCode(500, new { success = false, message = $"Error en base de datos: {mensajeReal}" });
+                return StatusCode(500, new { success = false, message = $"Error en base de datos: {mensajeReal}" });
             }
         }
 
-        // POST : /Tickets/Eliminar/ID
+        // POST : /Tickets/Anular/ID
 
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Eliminar(int id)
+        public async Task<IActionResult> Anular(int id)
         {
             try
             {
