@@ -1,6 +1,6 @@
 # Dulces Duendes
 
-Sistema web para la gestión de la regalaría **Dulces Duendes**: productos con imagenes, control de stock, ventas por ticket y cuenta corriente de clientes.
+Sistema web para la gestión de la regalería **Dulces Duendes**: productos con imágenes, control de stock, ventas por ticket y cuenta corriente de clientes.
 Proyecto integrador final de **Laboratorio II**. Grupo 45: Urbani, José María y Ferrando, Carlos Enrique
 
 ## Problema que resuelve
