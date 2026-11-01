@@ -1,0 +1,48 @@
+<div class="modal fade" id="modalDetalleTicket" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" v-if="ticketSeleccionado">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Ticket #{{ ticketSeleccionado.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <h4 class="fw-bold m-0">Dulces Duendes</h4>
+                    <small class="text-muted">{{ formatFecha(ticketSeleccionado.fecha) }}</small>
+                </div>
+                <hr />
+                <div class="mb-2 small">
+                    <strong>Atendido por:</strong> {{ ticketSeleccionado.usuarioNombre }}<br />
+                    <strong>Cliente:</strong> {{ ticketSeleccionado.clienteNombre || 'No registrado' }}<br />
+                    <strong>Forma de Pago:</strong> {{ ticketSeleccionado.tipoPago }}
+                </div>
+                <table class="table table-sm align-middle mt-3">
+                    <thead>
+                        <tr>
+                            <th>Cant.</th>
+                            <th>Producto</th>
+                            <th class="text-end">Precio Unitario</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="det in ticketSeleccionado.detalles" :key="det.id">
+                            <td>{{ det.cantidad }}</td>
+                            <td>{{ det.producto?.descripcion }}</td>
+                            <td class="text-end">${{ Number(det.precioUnitario).toFixed(2) }}</td>
+                            <td class="text-end">${{ Number(det.subtotal).toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between fs-5 fw-bold mt-3 border-top pt-2">
+                    <span>TOTAL:</span>
+                    <span class="text-success">${{ Number(ticketSeleccionado.total).toFixed(2) }}</span>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
