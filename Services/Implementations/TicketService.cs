@@ -1,9 +1,9 @@
 using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Data;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace DulcesDuendesApp.Services.Implementations
 {
@@ -88,6 +88,11 @@ namespace DulcesDuendesApp.Services.Implementations
         public async Task<IList<Ticket>> ObtenerTickets()
         {
             return await _repositorio.ObtenerTickets();
+        }
+
+        public async Task<PagedResult<Ticket>> ObtenerPaginado(PageRequest pageRequest, string? fechaDesde = null, string? fechaHasta = null)
+        {
+            return await _repositorio.ObtenerPaginado(pageRequest, fechaDesde, fechaHasta);
         }
     }
 }

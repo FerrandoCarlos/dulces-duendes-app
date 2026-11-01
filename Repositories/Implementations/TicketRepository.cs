@@ -1,3 +1,5 @@
+using DulcesDuendesApp.Common.Exceptions;
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Data;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
@@ -58,13 +60,42 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
         public async Task<int> Baja(int id)
         {
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id && t.Activo);
-            if (ticket != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
+                var ticket = await _context.Tickets
+                    .Include(t => t.Detalles)
+                    .FirstOrDefaultAsync(t => t.Id == id && t.Activo);
+
+                if (ticket == null)
+                {
+                    throw new AppException("El ticket no existe o ya ha sido anulado anteriormente.");
+                }
+
                 ticket.Activo = false;
+
+                if (ticket.Detalles != null && ticket.Detalles.Any())
+                {
+                    foreach(var detalle in ticket.Detalles)
+                    {
+                        var producto = await _context.Productos.FirstOrDefaultAsync(p => p.Id == detalle.ProductoId);
+                        if (producto != null)
+                        {
+                            producto.Stock += detalle.Cantidad;
+                        }
+                    }
+                }
+
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return id;
+            } catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
-            return id;
         }
         public async Task<IList<Ticket>> ObtenerTickets()
         {
@@ -75,6 +106,55 @@ namespace DulcesDuendesApp.Repositories.Implementations
             .Where(t => t.Activo)
             .OrderByDescending(t => t.Fecha)
             .ToListAsync();
+        }
+
+        public async Task<PagedResult<Ticket>> ObtenerPaginado(PageRequest pageRequest, string? fechaDesde = null, string? fechaHasta = null)
+        {
+            {
+                var query = _context.Tickets
+                    .Include(t => t.Cliente)
+                    .Include(t => t.Usuario)
+                    .Where(t => t.Activo)
+                    .AsNoTracking();
+
+                if (!string.IsNullOrEmpty(fechaDesde) && DateTime.TryParse(fechaDesde, out var desde))
+                {
+                    query = query.Where(t => t.Fecha >= desde.Date);
+                }
+
+                if (!string.IsNullOrEmpty(fechaHasta) && DateTime.TryParse(fechaHasta, out var hasta))
+                {
+                    var hastaFinDia = hasta.Date.AddDays(1).AddTicks(-1);
+                    query = query.Where(t => t.Fecha <= hastaFinDia);
+                }
+
+                var totalCount = await query.CountAsync();
+
+                var items = await query
+                    .OrderByDescending(t => t.Fecha)
+                    .Skip((pageRequest.Page - 1) * pageRequest.PageSize)
+                    .Take(pageRequest.PageSize)
+                    .ToListAsync();
+
+                return new PagedResult<Ticket>
+                {
+                    Items = items,
+                    TotalCount = totalCount,
+                    Page = pageRequest.Page,
+                    PageSize = pageRequest.PageSize
+                };
+
+            }
+        }
+
+        public async Task<IEnumerable<Ticket>> ObtenerTodosJson()
+        {
+            return await _context.Tickets
+                .Include(t => t.Cliente)
+                .Include(t => t.Usuario)
+                .AsNoTracking()
+                .OrderByDescending(t => t.Fecha)
+                .ToListAsync();
         }
     }
 }
