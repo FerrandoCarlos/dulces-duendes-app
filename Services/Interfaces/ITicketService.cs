@@ -1,3 +1,4 @@
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Repositories.Interfaces;
 using DulcesDuendesApp.Services.Interfaces;
@@ -13,5 +14,6 @@ namespace DulcesDuendesApp.Services.Interfaces
         Task<int> Modificacion(int id, Ticket ticket);
         Task<int> Baja(int id);
         Task<IList<Ticket>> ObtenerTickets();
+        Task<PagedResult<Ticket>> ObtenerPaginado(PageRequest pageRequest, string? fechaDesde = null, string? fechaHasta = null);
     }
 }
