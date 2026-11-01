@@ -1,0 +1,107 @@
+@model DulcesDuendesApp.Models.ViewModels.CatalogoIndexViewModel
+@using System.Globalization
+@using DulcesDuendesApp.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Catalogo";
+    var pesos = new CultureInfo("es-Ar");
+    var paginador = new PaginadorViewModel(
+        Model.Resultado.Page,
+        Model.Resultado.TotalPages,
+        p => Url.Action("Index", new { texto = Model.Texto, page = p }) ?? "#"
+    );
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Catálogo</h1>
+        <a asp-controller="Productos" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a productos
+        </a>
+    </div>
+    <form class="d-flex gap-2 mb-3" method="get" data-busqueda-auto>
+        <input type="search" name="texto" value="@Model.Texto" class="form-control dd-filtro-busqueda"
+               placeholder="Buscar por código o descripción..." />
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+        @if (!string.IsNullOrWhiteSpace(@Model.Texto))
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Ver todos</a>
+        }
+    </form>
+    @if (!Model.Resultado.Items.Any())
+    {
+        <p class="text-muted">No hay productos para mostrar.</p>
+    }
+
+    <div class="row g-4 mb-3">
+        @foreach (var p in Model.Resultado.Items)
+        {
+            var idCarrusel = $"carrusel-{p.Id}";
+            var cantidad = p.ImagenesUrl.Count;
+            var estadoStock = p.Stock == 0 ? "Sin stock" : (p.Stock < 5 ? $"¡Últimas {p.Stock} unidades!" : $"Stock:    {p.Stock}");
+            var claseStock = p.Stock < 5 ? "bg-danger" : "bg-secondary";
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 dd-producto-card">
+                    @if (cantidad == 0)
+                    {
+                        <div class="dd-sin-imagen">
+                            <i class="bi bi-image"></i>
+                            <span>Sin imágenes</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="@idCarrusel" class="carousel slide dd-carrusel" aria-label="Imágenes de @p.Descripcion">
+                            @if (cantidad > 1)
+                            {
+                                <div class="carousel-indicators">
+                                    @for (var i = 0; i < cantidad; i++)
+                                    {
+                                        <button type="button" data-bs-target="#@idCarrusel" data-bs-slide-to="@i"
+                                                class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : null)"
+                                                aria-label="Imagen @(i + 1)"></button>
+                                    }
+                                </div>
+                            }
+                            <div class="carousel-inner">
+                                @for (var i = 0; i < cantidad; i++)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <img src="@p.ImagenesUrl[i]" class="d-block w-100 dd-carrusel-img" loading="lazy"
+                                             alt="@p.Descripcion, imagen @(i + 1) de @cantidad" />
+                                    </div>
+                                }
+                            </div>
+                            @if (cantidad > 1)
+                            {
+                                <button class="carousel-control-prev" type="button" data-bs-target="#@idCarrusel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Anterior</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#@idCarrusel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Siguiente</span>
+                                </button>
+                            }
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h2 class="h6 card-title mb-1">@p.Descripcion</h2>
+                        <p class="text-muted small mb-3">@p.TipoProductoNombre · Cód. @p.CodigoBarra</p>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <div class="dd-precio">@p.PrecioVenta.ToString("C", pesos)</div>
+                                <div class="small text-muted">Cuenta corriente: @p.PrecioCuentaCorriente.ToString("C", pesos)
+                                </div>
+                            </div>
+                            <span class="badge @claseStock">@estadoStock</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+
+    <partial name="_Paginador" model="paginador" />
+    <p class="text-muted">Total: @Model.Resultado.TotalCount</p>
+}

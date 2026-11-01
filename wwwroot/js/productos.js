@@ -295,22 +295,17 @@ createApp({
       }
     };
 
-    // ---- Visor de imágenes ----
-    const modalImagenesEl = ref(null);
-    let modalImagenes;
-    const productoVisor = ref(null);
-
-    const abrirImagenes = (p) => {
-      productoVisor.value = p;
-      modalImagenes.show();
-    };
+    // ---- Catálogo ----
+    const urlCatalogo =
+      document.getElementById('app-productos').dataset.urlCatalogo;
+    const verEnCatalogo = (p) =>
+      `${urlCatalogo}?texto=${encodeURIComponent(p.codigoBarra)}`;
 
     // ---- Ciclo de vida ----
     onMounted(() => {
       cargar();
       modal = new bootstrap.Modal(modalEl.value);
       modalBaja = new bootstrap.Modal(modalBajaEl.value);
-      modalImagenes = new bootstrap.Modal(modalImagenesEl.value);
 
       modalEl.value.addEventListener('hidden.bs.modal', () => {
         if (!imagenesModificadas) return;
@@ -371,9 +366,7 @@ createApp({
       inputImagenes,
       subirImagenes,
       eliminarImagen,
-      modalImagenesEl,
-      productoVisor,
-      abrirImagenes,
+      verEnCatalogo,
     };
   },
 })

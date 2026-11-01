@@ -1,10 +1,13 @@
 @{
     ViewData["Title"] = "Productos";
 }
-<div id="app-productos">
+<div id="app-productos" data-url-catalogo="@Url.Action("Index","Catalogo")">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Productos</h1>
         <div class="d-flex gap-2">
+            <a asp-controller="Catalogo" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-grid"></i> Catálogo
+            </a>
             <a asp-controller="TiposProducto" asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-tags"></i> Tipos de producto
             </a>
@@ -59,10 +62,10 @@
                     <td class="text-end">{{ formatoPrecio(p.precioCuentaCorriente) }}</td>
                     <td class="text-end text-nowrap">
                         <div class="d-inline-flex gap-1">
-                            <button v-if="p.imagenesUrl.length" type="button" class="btn btn-sm btn-outline-secondary"
-                                    title="Ver imágenes" @@click="abrirImagenes(p)">
+                            <a v-if="p.imagenesUrl.length" :href="verEnCatalogo(p)"
+                               class="btn btn-sm btn-outline-secondary" title="Ver en el catálogo">
                                 <i class="bi bi-eye"></i>
-                            </button>
+                            </a>
                             <button type="button" class="btn btn-sm btn-outline-secondary" title="Editar"
                                 @@click="abrirEditar(p)">
                                 <i class="bi bi-pencil"></i>
@@ -227,28 +230,6 @@
                         <button type="button" class="btn btn-danger" :disabled="borrando" @@click="confirmarBaja">
                             {{ borrando ? 'Eliminando...' : 'Eliminar' }}
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @* Modal visor de imágenes *@
-        <div class="modal fade" tabindex="-1" ref="modalImagenesEl" aria-labelledby="titulo-visor" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title h5" id="titulo-visor">{{ productoVisor?.descripcion }}</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div v-for="(url, i) in (productoVisor?.imagenesUrl ?? [])" :key="url" class="col-6 col-md-4">
-                                <img :src="url" class="dd-visor-img"
-                                     :alt="'Imagen ' + (i + 1) + ' de ' + productoVisor.descripcion" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
