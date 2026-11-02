@@ -126,7 +126,7 @@ namespace DulcesDuendesApp.Controllers
                 {
                     Id = dto.Id,
                     UsuarioId = usuarioIdActual,
-                    ClienteId = dto.TipoPago == TipoPago.CuentaCorriente ? dto.ClienteId : null,
+                    ClienteId = dto.ClienteId,
                     TipoPago = dto.TipoPago,
                     Fecha = DateTime.Now,
                     Activo = true,

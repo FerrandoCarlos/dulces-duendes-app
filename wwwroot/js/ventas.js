@@ -164,11 +164,11 @@ createApp({
             }
 
             guardando.value = true;
-
+            const tipoPagoEnum = tipoPago.value === 'CuentaCorriente' ? 2 : 1;
             const ticketDTO = {
                 id: 0,
-                tipoPago: tipoPago.value,
-                clienteId: clienteSeleccionado.value ? (clienteSeleccionado.value.id || clienteSeleccionado.value.Id) : null,
+                tipoPago: tipoPagoEnum,
+                clienteId: tipoPago.value === 'CuentaCorriente' && clienteSeleccionado.value ? (clienteSeleccionado.value.id || clienteSeleccionado.value.Id) : null,
                 detalles: detalles.value.map(d => ({
                     productoId: d.productoId,
                     cantidad: d.cantidad,

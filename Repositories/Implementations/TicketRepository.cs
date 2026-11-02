@@ -38,9 +38,35 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
         public async Task<int> Alta(Ticket ticket)
         {
-            await _context.Tickets.AddAsync(ticket);
-            await _context.SaveChangesAsync();
-            return ticket.Id;
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                await _context.Tickets.AddAsync(ticket);
+
+                if (ticket.TipoPago == TipoPago.CuentaCorriente && ticket.ClienteId.HasValue && ticket.ClienteId.Value > 0)
+                {
+                    var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Id == ticket.ClienteId.Value && c.Activo);
+
+                    if (cliente == null)
+                    {
+                        throw new AppException("El cliente seleccionado no existe o está inactivo.");
+                    }
+
+                    cliente.Monto += ticket.Total;
+                    _context.Clientes.Update(cliente);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ticket.Id;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<int> Modificacion(int id, Ticket ticket)
@@ -77,7 +103,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
 
                 if (ticket.Detalles != null && ticket.Detalles.Any())
                 {
-                    foreach(var detalle in ticket.Detalles)
+                    foreach (var detalle in ticket.Detalles)
                     {
                         var producto = await _context.Productos.FirstOrDefaultAsync(p => p.Id == detalle.ProductoId);
                         if (producto != null)
@@ -87,11 +113,25 @@ namespace DulcesDuendesApp.Repositories.Implementations
                     }
                 }
 
+                if (ticket.TipoPago == TipoPago.CuentaCorriente && ticket.ClienteId.HasValue)
+                {
+                    var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Id == ticket.ClienteId.Value);
+                    if (cliente != null)
+                    {
+                        cliente.Monto -= ticket.Total;
+                        if (cliente.Monto < 0)
+                        {
+                            cliente.Monto = 0;
+                        }
+                    }
+                }
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 return id;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 throw;

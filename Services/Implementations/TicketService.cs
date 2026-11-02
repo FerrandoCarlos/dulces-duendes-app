@@ -32,37 +32,27 @@ namespace DulcesDuendesApp.Services.Implementations
         {
             if (ticket.Detalles == null || !ticket.Detalles.Any())
             {
-                throw new AppException("El ticket debe contener al menos un producto");
+                throw new AppException("El ticket debe contener al menos un producto.");
             }
-            
-            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
+            foreach (var detalle in ticket.Detalles)
             {
-                foreach (var detalle in ticket.Detalles)
+                var producto = await _context.Productos.FindAsync(detalle.ProductoId);
+                if (producto == null)
                 {
-                    var producto = await _context.Productos.FindAsync(detalle.ProductoId);
-                    if (producto == null)
-                    {
-                        throw new AppException("El producto no existe.");
-                    }
-
-                    if (producto.Stock < detalle.Cantidad)
-                    {
-                        throw new AppException($"Stock insuficiente para el producto '{producto.Descripcion}'.");
-                    }
-                    producto.Stock -= detalle.Cantidad;
-                    _context.Productos.Update(producto);
+                    throw new AppException("El producto no existe.");
                 }
-                await _context.Tickets.AddAsync(ticket);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-                return ticket.Id;
-            } catch (Exception)
-            {
-                await transaction.RollbackAsync();
-                throw;
+
+                if (producto.Stock < detalle.Cantidad)
+                {
+                    throw new AppException($"Stock insuficiente para el producto '{producto.Descripcion}'.");
+                }
+
+                producto.Stock -= detalle.Cantidad;
+                _context.Productos.Update(producto);
             }
+
+            return await _repositorio.Alta(ticket);
         }
 
         public async Task<int> Modificacion(int id, Ticket ticket)
