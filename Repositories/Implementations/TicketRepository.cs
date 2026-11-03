@@ -54,6 +54,17 @@ namespace DulcesDuendesApp.Repositories.Implementations
                     }
 
                     cliente.Monto += ticket.Total;
+                    var nuevoPago = new Pago
+                    {
+                        ClienteId = cliente.Id,
+                        Ticket = ticket,
+                        Monto = ticket.Total,
+                        fechaVencimiento = DateTime.Now.AddDays(30),
+                        Estado = "Pendiente"
+                    };
+
+                    await _context.Pagos.AddAsync(nuevoPago);
+
                     _context.Clientes.Update(cliente);
                 }
 
@@ -123,6 +134,11 @@ namespace DulcesDuendesApp.Repositories.Implementations
                         {
                             cliente.Monto = 0;
                         }
+                    }
+                    var pago = await _context.Pagos.FirstOrDefaultAsync(p => p.TicketId == id);
+                    if (pago != null)
+                    {
+                        pago.Estado = "Cancelado";
                     }
                 }
 
