@@ -47,8 +47,7 @@
             <thead>
                 <tr>
                     <th>DNI</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
+                    <th>Nombre y Apellido</th>
                     <th>Teléfono</th>
                     <th>Dirección</th>
                     <th>Monto</th>
@@ -69,8 +68,7 @@
                 </tr>
                 <tr v-else v-for="cliente in clientes" :key="cliente.id">
                     <td>{{ cliente.dni }}</td>
-                    <td>{{ cliente.nombre }}</td>
-                    <td>{{ cliente.apellido }}</td>
+                    <td> <a :href="`/Pagos?clienteId=${cliente.id}`" class="fw-bold text-decoration-none text-primary">{{ cliente.nombre }} {{ cliente.apellido}}</a></td>
                     <td>{{ cliente.telefono || 'Sin teléfono' }}</td>
                     <td>{{ cliente.direccion || 'Sin dirección asociada' }}</td>
                     <td>{{ Number(cliente.monto).toFixed(2) }}</td>
