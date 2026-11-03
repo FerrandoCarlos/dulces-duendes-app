@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Cuenta Corriente";
+}
+
+<div id="app-pagos" class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4" v-if="cliente">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-wallet2 me-2"></i>Cuenta Corriente
+            </h2>
+            <p class="text-muted mb-0">Cliente: <strong>{{ cliente.nombreCompleto }}</strong> (DNI: {{ cliente.dni }})
+            </p>
+        </div>
+        <div class="bg-white p-3 rounded shadow-sm border text-end">
+            <span class="text-muted small d-block">Saldo Actual</span>
+            <span class="fs-4 fw-bold text-danger">${{ Number(cliente.monto).toFixed(2) }}</span>
+        </div>
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° Ticket</th>
+                        <th>Monto</th>
+                        <th>Fecha Vencimiento</th>
+                        <th>Fecha de Pago</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="pago in pagos" :key="pago.id">
+                        <td><strong>#{{ String(pago.ticketId).padStart(6, '0') }}</strong></td>
+                        <td class="fw-bold">${{ Number(pago.monto).toFixed(2) }}</td>
+                        <td>{{ pago.fechaVencimiento }}</td>
+                        <td>{{ pago.fechaPago }}</td>
+                        <td>
+                            <span :class="{
+                                'badge bg-warning text-dark': pago.estado === 'Pendiente',
+                                'badge bg-success': pago.estado === 'Pagado',
+                                'badge bg-secondary': pago.estado === 'Cancelado'
+                                }">
+                                {{ pago.estado }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <button v-if="pago.estado === 'Pendiente'" class="btn btn-sm btn-outline-success"
+                                v-on:click="abrirModalCobro(pago)" :disabled="procesando">
+                                <i class="bi bi-check-circle me-1"></i> Registrar Cobro
+                            </button>
+                        </td>
+                    </tr>
+                    <tr v-if="pagos.length === 0">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No existen registros de cuenta corriente para este cliente.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <partial name="_ConfirmarPagoModal" />
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="~/js/pagos.js"></script>
+}

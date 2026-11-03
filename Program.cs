@@ -44,6 +44,8 @@ builder.Services.AddScoped<IDetalleTicketRepository, DetalleTicketRepository>();
 builder.Services.AddScoped<IDetalleTicketService, DetalleTicketService>();
 builder.Services.AddScoped<IImagenProductoRepository, ImagenProductoRepository>();
 builder.Services.AddScoped<IImagenProductoService, ImagenProductoService>();
+builder.Services.AddScoped<IPagoRepository, PagoRepository>();
+builder.Services.AddScoped<IPagoService, PagoService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEstadisticasRepository, EstadisticasRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
