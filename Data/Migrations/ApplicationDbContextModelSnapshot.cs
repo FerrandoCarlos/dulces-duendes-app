@@ -130,6 +130,43 @@ namespace DulcesDuendesApp.Data.Migrations
                     b.ToTable("ImagenesProducto");
                 });
 
+            modelBuilder.Entity("DulcesDuendesApp.Models.Pago", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("Monto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("fechaPago")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("fechaVencimiento")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Pagos");
+                });
+
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>
                 {
                     b.Property<int>("Id")
@@ -333,6 +370,25 @@ namespace DulcesDuendesApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("DulcesDuendesApp.Models.Pago", b =>
+                {
+                    b.HasOne("DulcesDuendesApp.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DulcesDuendesApp.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("DulcesDuendesApp.Models.Producto", b =>

@@ -13,6 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ImagenProducto> ImagenesProducto { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<DetalleTicket> DetalleTickets { get; set; }
+    public DbSet<Pago> Pagos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
