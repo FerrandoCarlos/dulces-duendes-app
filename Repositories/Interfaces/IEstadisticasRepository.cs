@@ -12,5 +12,6 @@ namespace DulcesDuendesApp.Repositories.Interfaces
         Task<decimal> GananciaEstimada();
         Task<int> ContarUsuarios(bool activos);
         Task<int> ContarAdministradoresActivos();
+        Task<decimal> SaldoCuentasCorrientes();
     }
 }

@@ -64,6 +64,8 @@ La clave de firma de los tokens JWT está en `appsettings.Development.json` y **
 | `DetalleTicket`  | Renglón de un ticket: producto, cantidad y precio unitario congelado al momento de la venta |
 | `Pago`           | Pago pendiente de una cuenta corriente                                                      |
 
+# Diagrama entidad-relación
+
 ```mermaid
 erDiagram
     Rol ||--o{ Usuario : "tiene"
@@ -134,7 +136,7 @@ erDiagram
         int UsuarioId FK
         int ClienteId FK "opcional, nulo en ventas en efectivo"
         datetime Fecha
-        int TipoPago "efectivo o cuenta corriente"
+        int TipoPago "1 efectivo, 2 cuenta corriente"
         decimal Total
         bool Activo
     }
@@ -153,10 +155,9 @@ erDiagram
         int ClienteId FK
         int TicketId FK
         decimal Monto
-        datetime FechaVencimiento
-        datetime FechaPago "nulo hasta que se acredita"
-        int Estado
-        decimal PorcentajeRecarga "recargo aplicado en esa venta"
+        datetime fechaVencimiento
+        datetime fechaPago
+        string Estado "texto"
     }
 ```
 

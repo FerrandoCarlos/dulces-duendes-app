@@ -31,5 +31,7 @@ namespace DulcesDuendesApp.Repositories.Implementations
         public Task<decimal> GananciaEstimada() => Activos.SumAsync(p => (p.PrecioVenta - p.PrecioCosto) * p.Stock);
         public Task<int> ContarUsuarios(bool activos) => _context.Usuarios.CountAsync(u => u.Activo == activos);
         public Task<int> ContarAdministradoresActivos() => _context.Usuarios.CountAsync(u => u.Activo && u.Rol!.Nombre == NombresRol.Administrador);
+        public Task<decimal> SaldoCuentasCorrientes() => _context.Clientes.AsNoTracking().Where(c => c.Activo).SumAsync(c => c.Monto);
+
     }
 }

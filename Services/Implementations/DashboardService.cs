@@ -37,7 +37,8 @@ namespace DulcesDuendesApp.Services.Implementations
                 await _repo.ContarUsuarios(false),
                 await _repo.ContarAdministradoresActivos(),
                 await _repo.ValorInventario(),
-                await _repo.GananciaEstimada()
+                await _repo.GananciaEstimada(),
+                await _repo.SaldoCuentasCorrientes()
             );
         }
 
