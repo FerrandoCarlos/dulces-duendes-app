@@ -4,6 +4,10 @@ createApp({
     setup() {
         const cliente = ref(null);
         const pagos = ref([]);
+        const pagina = ref(1);
+        const totalPaginas = ref (0);
+        const fechaDesde = ref('');
+        const fechaHasta = ref('');
         const procesando = ref(false);
         const pagoAConfirmar = ref(null);
         let modalConfirmarInstance = null;
@@ -13,19 +17,42 @@ createApp({
         const idFromPath = pathParts.length > 0 ? pathParts[pathParts.length - 1] : null;
         const clienteId = urlParams.get('clienteId') || (idFromPath && !isNaN(idFromPath) ? idFromPath : null);
 
-        const cargarDatos = async () => {
+        const cargarDatos = async (nroPagina = 1) => {
             if (!clienteId) return;
             try {
-                const response = await fetch(`/Pagos/ObtenerDatosCuentaCorrienteJson?clienteId=${clienteId}`);
-                if (response.ok) {
+                let url = `/Pagos/ObtenerDatosCuentaCorrienteJson?clienteId=${clienteId}&paginaNro=${nroPagina}`;
+
+                if (fechaDesde.value) url += `&fechaDesde=${encodeURIComponent(fechaDesde.value)}`;
+                if (fechaHasta.value) url += `&fechaHasta=${encodeURIComponent(fechaHasta.value)}`;
+
+                const response = await fetch(url);
+                if (response.ok)
+                {
                     const data = await response.json();
                     cliente.value = data.cliente;
-                    pagos.value = data.pagos || [];
+                    pagos.value = data.pagos.items || [];
+                    pagina.value = data.pagos.page;
+                    totalPaginas.value = Math.ceil(data.pagos.totalCount / data.pagos.pageSize) || 1;
                 }
             } catch (e) {
                 console.error("Error al cargar datos de cuenta corriente:", e);
             }
         };
+
+        const filtrarPagos = () => {
+            cargarDatos(1);
+        }
+
+        const limpiarFiltros = () => {
+            fechaDesde.value = '';
+            fechaHasta.value = '';
+            cargarDatos(1);
+        }
+
+        const irAPagina = (n) => {
+            if (n < 1 || n > totalPaginas.value || n === pagina.value) return;
+            cargarDatos(n);
+        }
 
         const abrirModalCobro = (pago) => {
             pagoAConfirmar.value = pago;
@@ -59,7 +86,7 @@ createApp({
                 if (response.ok && res && res.success) {
                     if (modalConfirmarInstance) modalConfirmarInstance.hide();
                     pagoAConfirmar.value = null;
-                    await cargarDatos();
+                    await cargarDatos(pagina.value);
                 } else {
                     alert(res?.message || "Error al registrar el cobro.");
                 }
@@ -84,14 +111,21 @@ createApp({
             if (modalEl) {
                 modalConfirmarInstance = new bootstrap.Modal(modalEl);
             }
-            cargarDatos();
+            cargarDatos(1);
         });
 
         return {
             cliente,
             pagos,
+            pagina,
+            totalPaginas,
+            fechaDesde,
+            fechaHasta,
             procesando,
             pagoAConfirmar,
+            filtrarPagos,
+            limpiarFiltros,
+            irAPagina,
             abrirModalCobro,
             confirmarYProcesarCobro,
             obtenerClaseEstado
