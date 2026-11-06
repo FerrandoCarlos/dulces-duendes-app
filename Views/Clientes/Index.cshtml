@@ -73,13 +73,15 @@
                     <td>{{ cliente.direccion || 'Sin dirección asociada' }}</td>
                     <td>{{ Number(cliente.monto).toFixed(2) }}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning me-1" v-on:click="abrirModalEditar(cliente)">
-                            Editar
+                        <button class="btn btn-sm btn-outline-secondary" v-on:click="abrirModalEditar(cliente)">
+                            <i class="bi bi-pencil"></i>
                         </button>
                         @if (User.IsInRole("Administrador"))
                         {
                             <button class="btn btn-sm btn-outline-danger"
-                                    v-on:click="pedirConfirmacionBaja(cliente)">Eliminar</button>
+                                    v-on:click="pedirConfirmacionBaja(cliente)">
+                                    <i class="bi bi-trash"></i>
+                            </button>
                         }
                     </td>
                 </tr>

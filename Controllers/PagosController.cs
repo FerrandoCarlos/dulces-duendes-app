@@ -1,3 +1,4 @@
+using DulcesDuendesApp.Common.Pagination;
 using DulcesDuendesApp.Models;
 using DulcesDuendesApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace DulcesDuendesApp.Controllers
 
         // GET : /Pagos/ObtenerCuentaCorrienteJson
 
-        public async Task<IActionResult> ObtenerDatosCuentaCorrienteJson(int clienteId)
+        public async Task<IActionResult> ObtenerDatosCuentaCorrienteJson(int clienteId, string? fechaDesde, string? fechaHasta, int paginaNro = 1)
         {
             try
             {
@@ -35,7 +36,8 @@ namespace DulcesDuendesApp.Controllers
                 {
                     return NotFound(new { success = false, message = "Cliente no encontrado." });
                 }
-                var pagos = await _pagoService.ObtenerPorClienteId(clienteId);
+                var pageRequest = new PageRequest(page: paginaNro, pageSize: PageRequest.DefaultPageSize);
+                PagedResult<Pago> pagedPagos = await _pagoService.ObtenerPaginado(clienteId, pageRequest, fechaDesde, fechaHasta);
 
                 return Ok(new
                 {
@@ -46,15 +48,21 @@ namespace DulcesDuendesApp.Controllers
                         dni = cliente.Dni,
                         monto = cliente.Monto
                     },
-                    pagos = pagos.Select(p => new
+                    pagos = new PagedResult<object>
                     {
-                        id = p.Id,
-                        ticketId = p.TicketId,
-                        monto = p.Monto,
-                        fechaVencimiento = p.fechaVencimiento.ToString("dd/MM/yyyy"),
-                        fechaPago = p.fechaPago != DateTime.MinValue ? p.fechaPago.ToString("dd/MM/yyyy") : "-",
-                        estado = p.Estado
-                    }).ToList()
+                        Page = pagedPagos.Page,
+                        PageSize = pagedPagos.PageSize,
+                        TotalCount = pagedPagos.TotalCount,
+                        Items = pagedPagos.Items.Select(p => new
+                        {
+                            id = p.Id,
+                            ticketId = p.TicketId,
+                            monto = p.Monto,
+                            fechaVencimiento = p.fechaVencimiento.ToString("dd/MM/yyyy"),
+                            fechaPago = p.fechaPago != DateTime.MinValue ? p.fechaPago.ToString("dd/MM/yyyy") : "-",
+                            estado = p.Estado
+                        }).ToList()
+                    }
                 });
             }
             catch (Exception ex)
